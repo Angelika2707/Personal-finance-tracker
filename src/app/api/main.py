@@ -2,8 +2,8 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from users.views import router as user_router
-from financial_records.views import router as financial_records_router
+from src.app.api.users.views import router as user_router
+from src.app.api.financial_records.views import router as financial_records_router
 import uvicorn
 
 
