@@ -1,4 +1,5 @@
 import requests
+import streamlit as st
 
 from app.config import settings
 

@@ -37,7 +37,7 @@ SQR group project assignment
 │       ├── database/          # Работа с БД
 │       │   ├── db_helper.py       # Подключение и вспомогательные функции
 │       │   └── models.py           # SQLAlchemy модели
-│       ├── frontend/          # Логика фронтенда (если есть)
+│       ├── frontend/          # Логика фронтенда
 │       │   ├── api_helpers.py     # Помощники для взаимодействия с API
 │       │   ├── components.py      # Компоненты интерфейса
 │       │   └── crud_page.py       # Страницы с CRUD функционалом
@@ -54,7 +54,13 @@ cd personal-finance-tracker
 ```bash
 poetry install
 ```
-## 3. Запуск бэкенда (FastAPI)
+
+## 3. Применение миграций
+```bash
+alembic upgrade head
+```
+
+## 4. Запуск бэкенда (FastAPI)
 Запустите сервер FastAPI с помощью следующей команды:
 
 ```bash
@@ -66,7 +72,7 @@ poetry run uvicorn src.app.api.main:app --reload
 - Swagger UI: http://127.0.0.1:8000/docs
 - ReDoc: http://127.0.0.1:8000/redoc
 
-## 4. Запуск фронтенда с помощью Streamlit
+## 5. Запуск фронтенда с помощью Streamlit
 ```bash
 poetry run streamlit run src/app/frontend/crud_page.py
 ```
