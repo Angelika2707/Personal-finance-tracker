@@ -31,3 +31,8 @@ class FinancialRecord(Base):
     description: Mapped[str] = mapped_column()
     amount: Mapped[float] = mapped_column(Float)
     date: Mapped[datetime.datetime] = mapped_column(DateTime)
+
+
+class User(Base):
+    username: Mapped[str] = mapped_column(unique=True)
+    hashed_password: Mapped[bytes] = mapped_column()
