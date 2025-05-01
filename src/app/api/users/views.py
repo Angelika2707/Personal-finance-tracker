@@ -48,8 +48,8 @@ async def login_user(
         key="access_token",
         value=token,
         httponly=True,
-        max_age=600,
-        expires=600,
+        max_age=86400,
+        expires=86400,
         samesite="lax",
         # secure=True,  # включи, если HTTPS
     )
