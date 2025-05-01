@@ -5,6 +5,11 @@ SQR group project assignment
 ├── .gitignore                  # Исключения для Git
 ├── alembic/                    # Миграции Alembic
 ├── alembic.ini                # Конфигурационный файл Alembic
+├── certs/
+│   ├── cert.pem               # SSL/TLS сертификат
+│   ├── jwt-private.pem        # Приватный ключ для подписи JWT
+│   ├── jwt-public.pem         # Публичный ключ для проверки подписи JWT
+│   └── key.pem                # Приватный ключ для SSL/TLS соединения
 ├── db.sqlite3                 # SQLite база данных
 ├── poetry.lock                # Фиксация зависимостей Poetry
 ├── pyproject.toml             # Основной файл конфигурации Poetry/пакета
@@ -12,11 +17,6 @@ SQR group project assignment
 ├── src/                       # Исходный код приложения
 │   └── app/                   # Основной модуль приложения
 │       ├── api/               # REST API модули
-│       │   ├── auth/          # Аутентификация и авторизация
-│       │   │   ├── schemas.py     # Pydantic-схемы
-│       │   │   ├── utils.py       # Утилиты (хеширование, токены и др.)
-│       │   │   ├── views.py       # Эндпоинты авторизации
-│       │   │   └── __init__.py    # Инициализация пакета
 │       │   ├── categories/    # Работа с категориями
 │       │   │   ├── schemas.py
 │       │   │   ├── crud.py
@@ -30,6 +30,7 @@ SQR group project assignment
 │       │   ├── users/         # Пользовательская логика
 │       │   │   ├── crud.py
 │       │   │   ├── schemas.py
+│       │   │   ├── utils.py
 │       │   │   ├── views.py
 │       │   │   └── __init__.py
 │       │   └── main.py        # Точка входа FastAPI
@@ -59,12 +60,43 @@ poetry install
 ```bash
 alembic upgrade head
 ```
+## 4. Генерация самоподписанных сертификатов и ключей для JWT
 
-## 4. Запуск бэкенда (FastAPI)
+### 4.1 Генерация SSL-сертификатов
+
+Нужно в корне проекта создать папку
+
+```bash
+mkdir "certs"
+```
+
+Сгенерируй самоподписанный сертификат и ключ для HTTPS
+
+```bash
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+```
+
+- key.pem — приватный ключ для SSL/TLS соединения.
+- cert.pem — самоподписанный сертификат для HTTPS.
+
+### 4.2 Генерация ключей для подписи и проверки JWT
+
+```bash
+# Генерация приватного ключа для JWT
+openssl genpkey -algorithm RSA -out jwt-private.pem -pkeyopt rsa_keygen_bits:2048
+
+# Генерация публичного ключа для JWT
+openssl rsa -pubout -in jwt-private.pem -out jwt-public.pem
+```
+
+- jwt-private.pem — приватный ключ для подписи JWT
+- jwt-public.pem — публичный ключ для проверки JWT
+
+## 5. Запуск бэкенда (FastAPI)
 Запустите сервер FastAPI с помощью следующей команды:
 
 ```bash
-poetry run uvicorn src.app.api.main:app --reload
+poetry run uvicorn src.app.api.main:app --host 127.0.0.1 --ssl-keyfile=certs/key.pem --ssl-certfile=certs/cert.pem --reload
 ```
 После запуска сервер будет доступен по адресу: http://127.0.0.1:8000
 
@@ -72,7 +104,7 @@ poetry run uvicorn src.app.api.main:app --reload
 - Swagger UI: http://127.0.0.1:8000/docs
 - ReDoc: http://127.0.0.1:8000/redoc
 
-## 5. Запуск фронтенда с помощью Streamlit
+## 6. Запуск фронтенда с помощью Streamlit
 ```bash
 poetry run streamlit run src/app/frontend/crud_page.py
 ```

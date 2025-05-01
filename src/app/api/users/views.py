@@ -51,7 +51,7 @@ async def login_user(
         max_age=86400,
         expires=86400,
         samesite="lax",
-        # secure=True,  # включи, если HTTPS
+        secure=True,
     )
 
     return {"message": "Login successful"}
