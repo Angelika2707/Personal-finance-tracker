@@ -3,8 +3,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.users import crud
 from app.api.users.crud import get_user_by_username
+from app.api.users.redis_utils import (
+    is_account_locked,
+    increment_failed_attempts,
+    lock_account,
+)
 from app.api.users.schemas import UserRegister, UserCreate, LoginRequest
 from app.api.users.utils import hash_password, validate_password, encode_jwt
+from app.redis.redis_helper import redis_helper
 from src.app.database.db_helper import db_helper
 
 router = APIRouter(prefix="/users", tags=["Users"])
@@ -36,7 +42,18 @@ async def login_user(
 ):
     user = await crud.get_user_by_username(session, login_data.username)
 
+    if await is_account_locked(login_data.username):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Account temporarily locked due to too many failed login attempts. Try again later.",
+        )
+
     if not user or not validate_password(login_data.password, user.hashed_password):
+        attempts = await increment_failed_attempts(login_data.username)
+
+        if attempts >= 5:
+            await lock_account(login_data.username)
+
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password",
