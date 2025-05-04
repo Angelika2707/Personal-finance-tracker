@@ -3,6 +3,17 @@ import httpx
 from api_helpers import client
 from app.config import settings
 
+st.markdown(
+    """
+    <style>
+        div.stTabs button div p {
+            font-size: 1.25rem;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 
 def register_user(username, password):
     try:
@@ -12,8 +23,10 @@ def register_user(username, password):
         )
         if response.status_code == 200:
             return login_user(username, password)
+        elif response.status_code == 422:
+            return False, "Password must have at least 5 characters"
         else:
-            return False, response.json().get("detail")
+            return False, "Failed to register"
     except httpx.RequestError as e:
         return False, f"Error connecting to server: {str(e)}"
 
@@ -30,13 +43,13 @@ def login_user(username, password):
             st.session_state["access_token"] = client.cookies.get("access_token")
             return True, response.json().get("message")
         else:
-            return False, response.json().get("detail")
+            return False, "Failed to login"
     except httpx.RequestError as e:
         return False, f"Error connecting to server: {str(e)}"
 
 
 def render_auth_page():
-    st.title("User Authentication App")
+    st.title("Personal Finance Tracker")
 
     tab1, tab2 = st.tabs(["Login", "Register"])
 
