@@ -10,7 +10,6 @@ from app.api.users.redis_utils import (
 )
 from app.api.users.schemas import UserRegister, UserCreate, LoginRequest
 from app.api.users.utils import hash_password, validate_password, encode_jwt
-from app.redis.redis_helper import redis_helper
 from src.app.database.db_helper import db_helper
 
 router = APIRouter(prefix="/users", tags=["Users"])
@@ -72,3 +71,9 @@ async def login_user(
     )
 
     return {"message": "Login successful"}
+
+
+@router.post("/logout/")
+async def logout(response: Response):
+    response.delete_cookie("access_token")
+    return {"message": "Logged out"}

@@ -23,8 +23,36 @@ class RedisSettings(BaseSettings):
     decode_responses: bool = True
 
 
+class APIEndpoints(BaseSettings):
+    base_url: str = "https://localhost:8000"
+    financial_records: str = "/financial_records/"
+    auth_login: str = "/users/login/"
+    auth_logout: str = "/users/logout/"
+    auth_register: str = "/users/register/"
+
+    @property
+    def financial_records_url(self):
+        return f"{self.base_url}{self.financial_records}"
+
+    @property
+    def login_url(self):
+        return f"{self.base_url}{self.auth_login}"
+
+    @property
+    def logout_url(self):
+        return f"{self.base_url}{self.auth_logout}"
+
+    @property
+    def register_url(self):
+        return f"{self.base_url}{self.auth_register}"
+
+    @property
+    def create_financial_records_url(self):
+        return f"{self.base_url}{self.auth_register}"
+
+
 class Settings(BaseSettings):
-    api_url_records: str = "http://localhost:8000/financial_records/"
+    api_endpoints: APIEndpoints = APIEndpoints()
     auth_jwt: AuthJWT = AuthJWT()
     db: DbSettings = DbSettings()
     redis: RedisSettings = RedisSettings()
