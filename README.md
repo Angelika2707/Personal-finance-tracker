@@ -1,6 +1,40 @@
 # Personal-finance-tracker
-SQR group project assignment
+## Project description
 
+Personal Finance Tracker is a simple web app for managing personal finances. 
+Users can log incomes and expenses, categorize them, visualize spending patterns, and export data.
+
+### Features
+- Secure login and personal account
+- Add, edit, delete financial records
+- Categorize transactions (predefined & custom)
+- Dashboard with information about financial records by period
+- Export data (CSV or PDF)
+
+### Tech Stack
+- Python 3.12
+- Poetry
+- FastAPI
+- SQLite
+- Asynchronous SQLAlchemy 2.0
+- Pydantic
+- Alembic
+- Streamlit
+- Redis
+- Pytest
+- Bandit
+
+## What Was Done
+
+Features Implemented
+- User registration and login (JWT token) - Anzhelika Akhmetova
+- Add/edit/delete income and expense records - Anzhelika Akhmetova
+- Add/edit/delete categories - Olesia Grediushko
+- Categorize records - Olesia Grediushko
+- Dashboard with analysis - Liubov Smirnova
+- Export financial records to CSV or PDF - Liubov Smirnova
+
+## Project structure
 ```bash
 ├── .gitignore                  # Исключения для Git
 ├── alembic/                    # Миграции Alembic
@@ -45,24 +79,24 @@ SQR group project assignment
 │   └── tests/                 # Тесты проекта
 ```
 
-# Запуск проекта
-## 1. Клонирование репозитория
+## Usage
+### 1. Клонирование репозитория
 ```bash
 git clone https://github.com/Angelika2707/Personal-finance-tracker
 cd personal-finance-tracker
 ```
-## 2. Установка зависимостей
+### 2. Установка зависимостей
 ```bash
 poetry install
 ```
 
-## 3. Применение миграций
+### 3. Применение миграций
 ```bash
 alembic upgrade head
 ```
-## 4. Генерация самоподписанных сертификатов и ключей для JWT
+### 4. Генерация самоподписанных сертификатов и ключей для JWT
 
-### 4.1 Генерация SSL-сертификатов
+#### 4.1 Генерация SSL-сертификатов
 
 Нужно в корне проекта создать папку
 
@@ -79,7 +113,7 @@ openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -node
 - key.pem — приватный ключ для SSL/TLS соединения.
 - cert.pem — самоподписанный сертификат для HTTPS.
 
-### 4.2 Генерация ключей для подписи и проверки JWT
+#### 4.2 Генерация ключей для подписи и проверки JWT
 
 ```bash
 # Генерация приватного ключа для JWT
@@ -92,7 +126,13 @@ openssl rsa -pubout -in jwt-private.pem -out jwt-public.pem
 - jwt-private.pem — приватный ключ для подписи JWT
 - jwt-public.pem — публичный ключ для проверки JWT
 
-## 5. Запуск бэкенда (FastAPI)
+### 5. Запуск Redis
+
+```bash
+docker compose -f redis-docker-compose.yml up -d
+```
+
+### 6. Запуск бэкенда (FastAPI)
 Запустите сервер FastAPI с помощью следующей команды:
 
 ```bash
@@ -104,7 +144,7 @@ poetry run uvicorn src.app.api.main:app --host 127.0.0.1 --ssl-keyfile=certs/key
 - Swagger UI: http://127.0.0.1:8000/docs
 - ReDoc: http://127.0.0.1:8000/redoc
 
-## 6. Запуск фронтенда с помощью Streamlit
+### 7. Запуск фронтенда с помощью Streamlit
 ```bash
 poetry run streamlit run src/app/frontend/crud_page.py
 ```
