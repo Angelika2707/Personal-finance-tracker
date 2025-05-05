@@ -2,7 +2,13 @@ import datetime
 from enum import Enum as PyEnum
 
 from sqlalchemy import Enum, Float, DateTime, ForeignKey, String
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, declared_attr, relationship
+from sqlalchemy.orm import (
+    DeclarativeBase,
+    Mapped,
+    mapped_column,
+    declared_attr,
+    relationship,
+)
 
 
 class TypeFinanceRecord(PyEnum):
@@ -25,7 +31,9 @@ class Category(Base):
 
     name: Mapped[str] = mapped_column(String(30), unique=True)
 
-    financial_records: Mapped[list["FinancialRecord"]] = relationship(back_populates="category")
+    financial_records: Mapped[list["FinancialRecord"]] = relationship(
+        back_populates="category"
+    )
 
 
 class FinancialRecord(Base):

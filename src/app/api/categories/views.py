@@ -15,29 +15,25 @@ router = APIRouter(prefix="/categories", tags=["Categories"])
 
 @router.get("/", response_model=list[Category])
 async def get_categories(
-        session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
     return await crud.get_categories(session=session)
 
 
 @router.post("/", response_model=Category)
 async def create_category(
-        category_in: CategoryCreate,
-        session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+    category_in: CategoryCreate,
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
-    return await crud.create_category(
-        session=session, category_in=category_in
-    )
+    return await crud.create_category(session=session, category_in=category_in)
 
 
 @router.get("/{category_id}", response_model=Category)
 async def get_category(
-        category_id,
-        session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+    category_id,
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
-    category = await crud.get_category(
-        session=session, category_id=category_id
-    )
+    category = await crud.get_category(session=session, category_id=category_id)
     if category:
         return category
 
@@ -49,13 +45,11 @@ async def get_category(
 
 @router.put("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def update_category(
-        category_id,
-        category_update: CategoryUpdate,
-        session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+    category_id,
+    category_update: CategoryUpdate,
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
-    category = await crud.get_category(
-        session=session, category_id=category_id
-    )
+    category = await crud.get_category(session=session, category_id=category_id)
 
     if category:
         return await crud.update_category(
@@ -72,17 +66,13 @@ async def update_category(
 
 @router.delete("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_category(
-        category_id,
-        session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+    category_id,
+    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
-    category = await crud.get_category(
-        session=session, category_id=category_id
-    )
+    category = await crud.get_category(session=session, category_id=category_id)
 
     if category:
-        return await crud.delete_category(
-            session=session, category=category
-        )
+        return await crud.delete_category(session=session, category=category)
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
