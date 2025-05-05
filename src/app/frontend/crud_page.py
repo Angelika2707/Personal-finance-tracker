@@ -5,6 +5,7 @@ from app.frontend.components import (
     render_create_form,
     render_records,
     render_categories,
+    render_analytics
 )
 
 st.markdown(
@@ -60,12 +61,14 @@ def main():
     st.title("Financial Records")
     init_session_state()
 
-    tab1, tab2 = st.tabs(["Records", "Categories"])
+    tab1, tab2, tab3 = st.tabs(["Records", "Categories", "Analytics"])
     with tab1:
         render_create_form()
         render_records()
     with tab2:
         render_categories()
+    with tab3:
+        render_analytics()
 
 
 if __name__ == "__main__":
