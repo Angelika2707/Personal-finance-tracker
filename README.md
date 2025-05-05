@@ -80,23 +80,23 @@ Features Implemented
 ```
 
 ## Usage
-### 1. Клонирование репозитория
+### 1. Cloning a repository
 ```bash
 git clone https://github.com/Angelika2707/Personal-finance-tracker
 cd personal-finance-tracker
 ```
-### 2. Установка зависимостей
+### 2. Dependency installation
 ```bash
 poetry install
 ```
 
-### 3. Применение миграций
+### 3. Application of migrations
 ```bash
 alembic upgrade head
 ```
-### 4. Генерация самоподписанных сертификатов и ключей для JWT
+### 4. Generation of self-signed certificates and keys for JWTs
 
-#### 4.1 Генерация SSL-сертификатов
+#### 4.1 SSL-certificate generation
 
 Нужно в корне проекта создать папку
 
@@ -113,7 +113,7 @@ openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -node
 - key.pem — приватный ключ для SSL/TLS соединения.
 - cert.pem — самоподписанный сертификат для HTTPS.
 
-#### 4.2 Генерация ключей для подписи и проверки JWT
+#### 4.2 Key generation for JWT signature and verification
 
 ```bash
 # Генерация приватного ключа для JWT
@@ -126,13 +126,13 @@ openssl rsa -pubout -in jwt-private.pem -out jwt-public.pem
 - jwt-private.pem — приватный ключ для подписи JWT
 - jwt-public.pem — публичный ключ для проверки JWT
 
-### 5. Запуск Redis
+### 5. Running Redis
 
 ```bash
 docker compose -f redis-docker-compose.yml up -d
 ```
 
-### 6. Запуск бэкенда (FastAPI)
+### 6. Running the backend (FastAPI)
 Запустите сервер FastAPI с помощью следующей команды:
 
 ```bash
@@ -144,7 +144,10 @@ poetry run uvicorn src.app.api.main:app --host 127.0.0.1 --ssl-keyfile=certs/key
 - Swagger UI: http://127.0.0.1:8000/docs
 - ReDoc: http://127.0.0.1:8000/redoc
 
-### 7. Запуск фронтенда с помощью Streamlit
+### 7. Running the frontend with Streamlit
 ```bash
 poetry run streamlit run src/app/frontend/crud_page.py
 ```
+
+## Achieved quality metrics
+
