@@ -14,6 +14,7 @@ class FinancialRecordBase(BaseModel):
     description: str
     amount: float
     date: datetime
+    category_id: int
 
 
 class FinancialRecordCreate(FinancialRecordBase):
@@ -35,3 +36,4 @@ class FinancialRecordUpdatePartial(FinancialRecordCreate):
     description: str | None = None
     amount: float | None = None
     date: datetime | None = None
+    category_id: int | None = None

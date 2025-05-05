@@ -1,7 +1,7 @@
 import datetime
 from enum import Enum as PyEnum
 
-from sqlalchemy import Enum, Float, DateTime, ForeignKey
+from sqlalchemy import Enum, Float, DateTime, ForeignKey, String
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -26,6 +26,16 @@ class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
 
 
+class Category(Base):
+    __tablename__ = "categories"
+
+    name: Mapped[str] = mapped_column(String(30), unique=True)
+
+    financial_records: Mapped[list["FinancialRecord"]] = relationship(
+        back_populates="category"
+    )
+
+
 class User(Base):
     username: Mapped[str] = mapped_column(unique=True)
     hashed_password: Mapped[bytes] = mapped_column()
@@ -47,3 +57,6 @@ class FinancialRecord(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
 
     user: Mapped["User"] = relationship(back_populates="records")
+    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
+
+    category: Mapped["Category"] = relationship(back_populates="financial_records")
