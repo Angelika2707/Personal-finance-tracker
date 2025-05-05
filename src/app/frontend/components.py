@@ -171,7 +171,7 @@ def render_records():
         edit_key = f"edit_mode_{record['id']}"
         if edit_key not in st.session_state:
             st.session_state[edit_key] = False
-        col1, col2, col3, col4, col5, col6 = st.columns([1.2, 3, 1.5, 2, 2.5, 1.75])
+        col1, col2, col3, col4, col5, col6 = st.columns([1.25, 3, 1.5, 2, 2.5, 1.75])
         with col1:
             color = "green" if record["type"] == "income" else "red"
             text = record["type"].capitalize()
@@ -198,11 +198,11 @@ def render_records():
             with cols_btn[1]:
                 if st.button("🗑", key=f"delete_{record['id']}"):
                     if delete_record(record["id"]):
-                        st.success(f"Deleted: {record['description']}")
+                        st.success("✔")
                         st.session_state.refresh_records = True
                         st.rerun()
                     else:
-                        st.error("Error deleting record")
+                        st.error("✖")
         if st.session_state[edit_key]:
             render_edit_form(record)
         st.markdown("---")
@@ -239,6 +239,6 @@ def render_categories():
                     st.session_state.categories.append(created)
                     st.rerun()
                 else:
-                    st.error("Failed to create category")
+                    return
             else:
                 st.error("Category name cannot be empty")

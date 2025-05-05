@@ -50,7 +50,7 @@ def create_category(data):
         if response.status_code == 200:
             return response.json()
         else:
-            st.error(f"Error creating category: {response.text}")
+            st.error(f"Error creating category. This name may already be in use")
             return None
     except Exception as e:
         st.error(f"Connection error: {e}")
