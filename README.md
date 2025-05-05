@@ -98,33 +98,34 @@ alembic upgrade head
 
 #### 4.1 SSL-certificate generation
 
-Нужно в корне проекта создать папку
+You need to create a folder in the root of the project
 
 ```bash
 mkdir "certs"
+cd "certs"
 ```
 
-Сгенерируй самоподписанный сертификат и ключ для HTTPS
+Generate self-signed certificate and key for HTTPS
 
 ```bash
 openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
 ```
 
-- key.pem — приватный ключ для SSL/TLS соединения.
-- cert.pem — самоподписанный сертификат для HTTPS.
+- key.pem - private key for SSL/TLS connection
+- cert.pem - self-signed certificate for HTTPS
 
 #### 4.2 Key generation for JWT signature and verification
 
 ```bash
-# Генерация приватного ключа для JWT
+# Private key generation for JWT
 openssl genpkey -algorithm RSA -out jwt-private.pem -pkeyopt rsa_keygen_bits:2048
 
-# Генерация публичного ключа для JWT
+# Generating a public key for the JWT
 openssl rsa -pubout -in jwt-private.pem -out jwt-public.pem
 ```
 
-- jwt-private.pem — приватный ключ для подписи JWT
-- jwt-public.pem — публичный ключ для проверки JWT
+- jwt-private.pem - private key for JWT signature
+- jwt-public.pem - public key for JWT verification
 
 ### 5. Running Redis
 
@@ -133,20 +134,20 @@ docker compose -f redis-docker-compose.yml up -d
 ```
 
 ### 6. Running the backend (FastAPI)
-Запустите сервер FastAPI с помощью следующей команды:
+Start the FastAPI server using the following command:
 
 ```bash
 poetry run uvicorn src.app.api.main:app --host 127.0.0.1 --ssl-keyfile=certs/key.pem --ssl-certfile=certs/cert.pem --reload
 ```
-После запуска сервер будет доступен по адресу: http://127.0.0.1:8000
+Once started, the server will be available at: http://127.0.0.1:8000
 
-Документация API будет доступна по следующим ссылкам:
+API documentation will be available at the following links:
 - Swagger UI: http://127.0.0.1:8000/docs
 - ReDoc: http://127.0.0.1:8000/redoc
 
 ### 7. Running the frontend with Streamlit
 ```bash
-poetry run streamlit run src/app/frontend/crud_page.py
+poetry run streamlit run src/app/frontend/main.py
 ```
 
 ## Achieved quality metrics
