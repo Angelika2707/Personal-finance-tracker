@@ -18,6 +18,7 @@ class DbSettings(BaseSettings):
 
 class Settings(BaseSettings):
     api_url_records: str = "http://localhost:8000/financial_records/"
+    api_url_categories: str = "http://localhost:8000/categories/"
     auth_jwt: AuthJWT = AuthJWT()
     db: DbSettings = DbSettings()
 
