@@ -1,4 +1,4 @@
-"""Таблица пользователей
+"""Users table
 
 Revision ID: 0713bf0c584d
 Revises: 4d34ed2a9b21
