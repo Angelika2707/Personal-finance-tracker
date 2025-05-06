@@ -19,9 +19,9 @@ if __name__ == "__main__":
     if "logged_in" not in st.session_state:
         st.session_state["logged_in"] = False
     if "username" not in st.session_state:
-        st.session_state["username"] = ""
+        st.session_state["username"] = None
     if "access_token" not in st.session_state:
-        st.session_state["access_token"] = ""
+        st.session_state["access_token"] = None
     if "page" not in st.session_state:
         st.session_state["page"] = "auth"
 
