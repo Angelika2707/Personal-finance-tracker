@@ -5,7 +5,7 @@ import requests
 
 
 if "client" not in st.session_state:
-    st.session_state.client = httpx.Client(verify=False)
+    st.session_state.client = httpx.Client(verify=str(settings.auth_jwt.cert_path))
 
 client = st.session_state.client
 
@@ -83,6 +83,16 @@ def get_categories():
 
 def create_category(data):
     try:
+        existing_categories = get_categories()
+        category_name = data.get("name", "").strip()
+        if not category_name:
+            st.error("The name of a category cannot be empty")
+            return None
+        for category in existing_categories:
+            if category.get("name").strip().lower() == category_name.lower():
+                st.error(f"Category with name '{category_name}' already exists")
+                return None
+        data["name"] = category_name.capitalize()
         response = client.post(settings.api_endpoints.categories_url, json=data)
         if response.status_code == 200:
             return response.json()

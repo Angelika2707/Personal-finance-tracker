@@ -10,35 +10,6 @@ from app.frontend.components import (
 )
 
 
-st.markdown(
-    """
-        <style>
-            div[class*="stColumn"] > div {
-                text-align: center;
-            }
-            div[class*="stColumn"] div.stButton {
-                display: flex;
-                justify-content: center;
-            }
-            div[class*="stColumn"] div.stColumns {
-                display: flex;
-                justify-content: center;
-            }
-            .badge {
-                display: inline-block;
-                background-color: #e0f2fe;
-                color: #1e3a8a;
-                padding: 4px 8px; 
-                border-radius: 12px;
-                font-size: 0.9rem;
-                font-weight: 700;
-            }
-        </style>
-        """,
-    unsafe_allow_html=True,
-)
-
-
 def init_session_state():
     if "records" not in st.session_state or st.session_state.get(
         "refresh_records", False
@@ -53,6 +24,33 @@ def init_session_state():
 
 
 def render_records_page():
+    st.markdown(
+        """
+            <style>
+                div[class*="stColumn"] > div {
+                    text-align: center;
+                }
+                div[class*="stColumn"] div.stButton {
+                    display: flex;
+                    justify-content: center;
+                }
+                div[class*="stColumn"] div.stColumns {
+                    display: flex;
+                    justify-content: center;
+                }
+                .badge {
+                    display: inline-block;
+                    background-color: #e0f2fe;
+                    color: #1e3a8a;
+                    padding: 4px 8px; 
+                    border-radius: 12px;
+                    font-size: 0.9rem;
+                    font-weight: 700;
+                }
+            </style>
+            """,
+        unsafe_allow_html=True,
+    )
     col1, col2 = st.columns([9, 1.25])
     with col2:
         if st.button("Logout"):

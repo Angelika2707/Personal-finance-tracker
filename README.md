@@ -108,7 +108,7 @@ cd "certs"
 Generate self-signed certificate and key for HTTPS
 
 ```bash
-openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -config openssl.cnf
 ```
 
 - key.pem - private key for SSL/TLS connection

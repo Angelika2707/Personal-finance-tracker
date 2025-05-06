@@ -37,6 +37,7 @@ packages = [
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"
 black = "^25.1.0"
+bandit = "^1.8.3"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
