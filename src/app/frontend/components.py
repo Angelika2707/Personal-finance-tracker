@@ -264,12 +264,16 @@ def render_analytics():
     df["date"] = pd.to_datetime(df["date"])
     df["amount"] = pd.to_numeric(df["amount"])
 
+    # Создаём отображение category_id → name
+    category_map = {c["id"]: c["name"] for c in st.session_state.categories}
+    df["category_name"] = df["category_id"].map(category_map)
+
     # Фильтры даты
     col1, col2 = st.columns(2)
     with col1:
-        start_date = st.date_input("Start date", value=df["date"].min().to_pydatetime())
+        start_date = st.date_input("Start date", value=df["date"].min().date())
     with col2:
-        end_date = st.date_input("End date", value=df["date"].max().to_pydatetime())
+        end_date = st.date_input("End date", value=df["date"].max().date())
 
     # Фильтрация данных
     mask = (df["date"] >= pd.to_datetime(start_date)) & (
@@ -277,15 +281,22 @@ def render_analytics():
     )
     filtered_df = df.loc[mask]
 
-    # Разделяем доходы и расходы
+    selected_categories = st.multiselect(
+        "Filter by categories",
+        options=[c['name'] for c in st.session_state.categories],
+        default=None
+    )
+
+    if selected_categories:
+        filtered_df = filtered_df[filtered_df['category_name'].isin(selected_categories)]
+
     income_df = filtered_df[filtered_df["type"] == "income"]
     expense_df = filtered_df[filtered_df["type"] == "expense"]
 
-    # Вкладки для разных графиков
-    tab1, tab3, tab4 = st.tabs(
+    tab1, tab2, tab3, tab4 = st.tabs(
         [
             "Total Overview",
-            #   "By Category",
+            "By Category",
             "Daily Trends",
             "Statistics",
         ]
@@ -312,16 +323,61 @@ def render_analytics():
         )
         st.plotly_chart(fig, use_container_width=True)
 
-    # with tab2:
-    #     # График по категориям
-    #     st.subheader("By Category")
-    #     if 'category' in filtered_df.columns:
-    #         cat_df = filtered_df.groupby(['category', 'type'])['amount'].sum().reset_index()
-    #         fig = px.bar(cat_df, x='category', y='amount', color='type',
-    #                     barmode='group', title="Spending by Category")
-    #         st.plotly_chart(fig, use_container_width=True)
-    #     else:
-    #         st.warning("No category data available")
+    with tab2:
+        st.subheader("Category Analytics")
+        
+        # Проверка наличия данных
+        if not hasattr(st.session_state, 'categories') or not st.session_state.categories:
+            st.warning("No categories available. Please add categories first.")
+        elif filtered_df.empty:
+            st.warning("No records available for selected period")
+        else:
+            # Создаем маппинг ID категорий к названиям
+            category_map = {c['id']: c['name'] for c in st.session_state.categories}
+            filtered_df['category_name'] = filtered_df['category_id'].map(category_map)
+            
+            # Фильтр по категориям
+            selected_categories = st.multiselect(
+                "Select categories to analyze",
+                options=list(category_map.values()),
+                default=list(category_map.values())
+            )
+            
+            if selected_categories:
+                filtered_df = filtered_df[filtered_df['category_name'].isin(selected_categories)]
+            
+            # График доходов/расходов по категориям
+            st.markdown("### Income vs Expenses by Category")
+            cat_df = filtered_df.groupby(['category_name', 'type'])['amount'].sum().reset_index()
+            
+            if not cat_df.empty:
+                fig = px.bar(
+                    cat_df,
+                    x='category_name',
+                    y='amount',
+                    color='type',
+                    barmode='group',
+                    title="Income and Expenses by Category",
+                    labels={'category_name': 'Category', 'amount': 'Amount', 'type': 'Type'},
+                    color_discrete_map={'income': 'green', 'expense': 'red'}
+                )
+                st.plotly_chart(fig, use_container_width=True)
+                
+                # Круговая диаграмма для расходов
+                st.markdown("### Expenses Distribution")
+                expense_df = filtered_df[filtered_df['type'] == 'expense']
+                if not expense_df.empty:
+                    fig_pie = px.pie(
+                        expense_df.groupby('category_name')['amount'].sum().reset_index(),
+                        values='amount',
+                        names='category_name',
+                        title="Percentage of Expenses by Category"
+                    )
+                    st.plotly_chart(fig_pie, use_container_width=True)
+                else:
+                    st.info("No expense data for selected period/categories")
+            else:
+                st.warning("No data available for selected filters")
 
     with tab3:
         # Ежедневные тренды
