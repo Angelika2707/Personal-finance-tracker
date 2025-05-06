@@ -27,10 +27,6 @@ def upgrade() -> None:
         sa.Column("name", sa.String(length=30), nullable=False),
         sa.Column("id", sa.Integer(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("name"),
-    )
-    op.add_column(
-        "financialrecords", sa.Column("category_id", sa.Integer(), nullable=False)
     )
     with op.batch_alter_table("financialrecords") as batch_op:
         batch_op.add_column(sa.Column("category_id", sa.Integer(), nullable=False))
