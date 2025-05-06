@@ -29,11 +29,14 @@ class Base(DeclarativeBase):
 class Category(Base):
     __tablename__ = "categories"
 
-    name: Mapped[str] = mapped_column(String(30), unique=True)
+    name: Mapped[str] = mapped_column(String(30))
 
     financial_records: Mapped[list["FinancialRecord"]] = relationship(
         back_populates="category"
     )
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user: Mapped["User"] = relationship(back_populates="categories")
 
 
 class User(Base):
@@ -41,6 +44,7 @@ class User(Base):
     hashed_password: Mapped[bytes] = mapped_column()
 
     records: Mapped[list["FinancialRecord"]] = relationship(back_populates="user")
+    categories: Mapped[list["Category"]] = relationship(back_populates="user")
 
 
 class FinancialRecord(Base):

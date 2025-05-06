@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
+from src.app.api.financial_records.utils import get_current_user
 
 from . import crud
 from .schemas import (
@@ -15,25 +16,39 @@ router = APIRouter(prefix="/categories", tags=["Categories"])
 
 @router.get("/", response_model=list[Category])
 async def get_categories(
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+        session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+        current_user_id: int = Depends(get_current_user),
 ):
-    return await crud.get_categories(session=session)
+    return await crud.get_categories(
+        session=session,
+        user_id=current_user_id
+    )
 
 
 @router.post("/", response_model=Category)
 async def create_category(
-    category_in: CategoryCreate,
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+        category_in: CategoryCreate,
+        session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+        current_user_id: int = Depends(get_current_user),
 ):
-    return await crud.create_category(session=session, category_in=category_in)
+    return await crud.create_category(
+        session=session,
+        category_in=category_in,
+        user_id=current_user_id
+    )
 
 
 @router.get("/{category_id}", response_model=Category)
 async def get_category(
-    category_id,
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+        category_id: int,
+        session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+        current_user_id: int = Depends(get_current_user),
 ):
-    category = await crud.get_category(session=session, category_id=category_id)
+    category = await crud.get_category(
+        session=session,
+        category_id=category_id,
+        user_id=current_user_id
+    )
     if category:
         return category
 
@@ -45,11 +60,16 @@ async def get_category(
 
 @router.put("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def update_category(
-    category_id,
-    category_update: CategoryUpdate,
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+        category_id: int,
+        category_update: CategoryUpdate,
+        session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+        current_user_id: int = Depends(get_current_user),
 ):
-    category = await crud.get_category(session=session, category_id=category_id)
+    category = await crud.get_category(
+        session=session,
+        category_id=category_id,
+        user_id=current_user_id
+    )
 
     if category:
         return await crud.update_category(
@@ -66,13 +86,20 @@ async def update_category(
 
 @router.delete("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_category(
-    category_id,
-    session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+        category_id: int,
+        session: AsyncSession = Depends(db_helper.scoped_session_dependency),
+        current_user_id: int = Depends(get_current_user),
 ):
-    category = await crud.get_category(session=session, category_id=category_id)
+    category = await crud.get_category(
+        session=session,
+        category_id=category_id,
+        user_id=current_user_id,
+    )
 
     if category:
-        return await crud.delete_category(session=session, category=category)
+        return await crud.delete_category(
+            session=session, category=category
+        )
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
