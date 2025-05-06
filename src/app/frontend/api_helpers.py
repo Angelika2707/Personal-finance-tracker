@@ -4,7 +4,7 @@ from app.config import settings
 
 
 if "client" not in st.session_state:
-    st.session_state.client = httpx.Client(verify=False)
+    st.session_state.client = httpx.Client(verify=str(settings.auth_jwt.cert_path))
 
 client = st.session_state.client
 
