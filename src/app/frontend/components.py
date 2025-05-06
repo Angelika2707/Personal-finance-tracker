@@ -1,8 +1,9 @@
 from datetime import datetime
-
+from app.frontend.api_helpers import generate_pdf_report
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+import io
 
 from app.frontend.api_helpers import (
     create_record,
@@ -281,14 +282,14 @@ def render_analytics():
     )
     filtered_df = df.loc[mask]
 
-    selected_categories = st.multiselect(
-        "Filter by categories",
-        options=[c['name'] for c in st.session_state.categories],
-        default=None
-    )
+    # selected_categories = st.multiselect(
+    #     "Filter by categories",
+    #     options=[c['name'] for c in st.session_state.categories],
+    #     default=None
+    # )
 
-    if selected_categories:
-        filtered_df = filtered_df[filtered_df['category_name'].isin(selected_categories)]
+    # if selected_categories:
+    #     filtered_df = filtered_df[filtered_df['category_name'].isin(selected_categories)]
 
     income_df = filtered_df[filtered_df["type"] == "income"]
     expense_df = filtered_df[filtered_df["type"] == "expense"]
@@ -421,3 +422,66 @@ def render_analytics():
             f"{balance:.2f}",
             delta_color="inverse" if balance < 0 else "normal",
         )
+    
+    if not filtered_df.empty:
+        st.markdown("---")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # CSV экспорт
+            def prepare_enhanced_csv(df):
+                # Основные данные
+                main_data = df[['date', 'type', 'category_name', 'description', 'amount']]
+                
+                # Статистика по категориям
+                category_stats = df.groupby(['category_name', 'type'])['amount'] \
+                                .agg(['sum', 'count', 'mean']) \
+                                .reset_index()
+                category_stats.columns = ['Category', 'Type', 'Total Amount', 'Transaction Count', 'Average Amount']
+                
+                # Общая статистика
+                total_stats = pd.DataFrame({
+                    'Metric': ['Total Income', 'Total Expenses', 'Balance'],
+                    'Value': [
+                        income_df['amount'].sum(),
+                        expense_df['amount'].sum(),
+                        income_df['amount'].sum() - expense_df['amount'].sum()
+                    ]
+                })
+                
+                # Собираем все в один CSV
+                output = io.StringIO()
+                output.write("Main Transactions Data\n")
+                main_data.to_csv(output, index=False)
+                output.write("\n\nCategory Statistics\n")
+                category_stats.to_csv(output, index=False)
+                output.write("\n\nSummary Statistics\n")
+                total_stats.to_csv(output, index=False)
+                
+                return output.getvalue()
+
+            csv_data = prepare_enhanced_csv(filtered_df)
+            st.download_button(
+                label="Download Enhanced CSV",
+                data=csv_data,
+                file_name="financial_report_enhanced.csv",
+                mime="text/csv",
+            )
+        
+            with col2:
+                if st.button("Generate PDF Report"):
+                    with st.spinner("Generating PDF..."):
+                        try:
+                            pdf_data = generate_pdf_report(filtered_df)
+                            if pdf_data:
+                                st.download_button(
+                                    label="Download PDF Report",
+                                    data=pdf_data,
+                                    file_name=f"financial_report_{datetime.now().date()}.pdf",
+                                    mime="application/pdf",
+                                )
+                            else:
+                                st.error("Failed to generate PDF - no data returned")
+                        except Exception as e:
+                            st.error(f"PDF generation failed: {str(e)}")
+
