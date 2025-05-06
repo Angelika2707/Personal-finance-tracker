@@ -1,24 +1,17 @@
 import streamlit as st
 
+from app.frontend.api_helpers import logout_user
 from app.frontend.api_helpers import get_data, get_categories
 from app.frontend.components import (
     render_create_form,
     render_records,
     render_categories,
-    render_analytics
+    render_analytics,
 )
+
 
 st.markdown(
     """
-            <style>
-                div.stTabs button div p {
-                    font-size: 1.25rem;
-                }
-            </style>
-            """,
-    unsafe_allow_html=True,
-)
-st.markdown("""
         <style>
             div[class*="stColumn"] > div {
                 text-align: center;
@@ -41,7 +34,9 @@ st.markdown("""
                 font-weight: 700;
             }
         </style>
-        """, unsafe_allow_html=True)
+        """,
+    unsafe_allow_html=True,
+)
 
 
 def init_session_state():
@@ -57,7 +52,13 @@ def init_session_state():
         st.session_state.refresh_categories = False
 
 
-def main():
+def render_records_page():
+    col1, col2 = st.columns([9, 1.25])
+    with col2:
+        if st.button("Logout"):
+            logout_user()
+            st.session_state["page"] = "auth"
+            st.rerun()
     st.title("Financial Records")
     init_session_state()
 
@@ -69,7 +70,3 @@ def main():
         render_categories()
     with tab3:
         render_analytics()
-
-
-if __name__ == "__main__":
-    main()

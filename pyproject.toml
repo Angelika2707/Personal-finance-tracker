@@ -23,8 +23,10 @@ dependencies = [
     "email-validator (>=2.2.0,<3.0.0)",
     "pandas (>=2.2.3,<3.0.0)",
     "plotly (>=6.0.1,<7.0.0)",
-    "authx (>=1.4.2,<2.0.0)",
-    "black (>=25.1.0,<26.0.0)"
+    "black (>=25.1.0,<26.0.0)",
+    "passlib[bcrypt] (>=1.7.4,<2.0.0)",
+    "redis[asyncio] (>=6.0.0,<7.0.0)",
+    "httpx (>=0.28.1,<0.29.0)"
 ]
 
 [tool.poetry]
