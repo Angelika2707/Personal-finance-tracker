@@ -30,6 +30,7 @@ class APIEndpoints(BaseSettings):
     auth_login: str = "/users/login/"
     auth_logout: str = "/users/logout/"
     auth_register: str = "/users/register/"
+    generate_pdf: str = "/financial_records/generate-pdf/"
 
     @property
     def financial_records_url(self):
