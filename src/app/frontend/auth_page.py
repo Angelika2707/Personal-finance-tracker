@@ -3,17 +3,6 @@ import httpx
 from api_helpers import client
 from app.config import settings
 
-st.markdown(
-    """
-    <style>
-        div.stTabs button div p {
-            font-size: 1.25rem;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
 
 def register_user(username, password):
     try:

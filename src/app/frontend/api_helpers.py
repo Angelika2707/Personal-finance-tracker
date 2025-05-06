@@ -69,29 +69,33 @@ def logout_user():
 
 def get_categories():
     try:
-        response = requests.get(settings.api_url_categories)
+        response = client.get(settings.api_endpoints.categories_url)
         if response.status_code == 200:
             return response.json()
         else:
             st.error("Error getting categories")
-    except Exception as e:
+            return []
+    except httpx.RequestError as e:
         st.error(f"Connection error: {e}")
-    return []
+        return []
 
 
 def create_category(data):
     try:
-        response = requests.post(settings.api_url_categories, json=data)
+        response = client.post(settings.api_endpoints.categories_url, json=data)
         if response.status_code == 200:
             return response.json()
-        else:
-            st.error(f"Error creating category. This name may already be in use")
-            return None
-    except Exception as e:
-        st.error(f"Connection error: {e}")
+    except httpx.RequestError as e:
+        st.error(f"Failed to create category: {e}")
         return None
 
 
 def delete_category(category_id: int):
-    response = requests.delete(f"{settings.api_url_categories}{category_id}")
-    return response.status_code == 204
+    try:
+        response = client.delete(
+            f"{settings.api_endpoints.categories_url}{category_id}"
+        )
+        return response.status_code == 204
+    except httpx.RequestError as e:
+        st.error(f"Failed to delete category: {e}")
+        return False

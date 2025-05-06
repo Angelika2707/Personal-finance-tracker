@@ -191,7 +191,9 @@ def render_records():
             st.write(date_obj.strftime("%b %d, %Y %H:%M"))
         with col5:
             category_name = category_map.get(record["category_id"])
-            st.markdown(f"<span class='badge'>{category_name}</span>", unsafe_allow_html=True)
+            st.markdown(
+                f"<span class='badge'>{category_name}</span>", unsafe_allow_html=True
+            )
         with col6:
             cols_btn = st.columns([1, 1])
             with cols_btn[0]:
@@ -215,7 +217,9 @@ def render_categories():
     for category in st.session_state.categories:
         col1, col2, col3 = st.columns([6, 2, 2])
         with col1:
-            st.markdown(f"<span class='badge'>{category['name']}</span>", unsafe_allow_html=True)
+            st.markdown(
+                f"<span class='badge'>{category['name']}</span>", unsafe_allow_html=True
+            )
         with col2:
             st.write("")
         with col3:
@@ -257,43 +261,55 @@ def render_analytics():
 
     # Конвертируем в DataFrame
     df = pd.DataFrame(records)
-    df['date'] = pd.to_datetime(df['date'])
-    df['amount'] = pd.to_numeric(df['amount'])
+    df["date"] = pd.to_datetime(df["date"])
+    df["amount"] = pd.to_numeric(df["amount"])
 
     # Фильтры даты
     col1, col2 = st.columns(2)
     with col1:
-        start_date = st.date_input("Start date", value=df['date'].min().to_pydatetime())
+        start_date = st.date_input("Start date", value=df["date"].min().to_pydatetime())
     with col2:
-        end_date = st.date_input("End date", value=df['date'].max().to_pydatetime())
+        end_date = st.date_input("End date", value=df["date"].max().to_pydatetime())
 
     # Фильтрация данных
-    mask = (df['date'] >= pd.to_datetime(start_date)) & (df['date'] <= pd.to_datetime(end_date))
+    mask = (df["date"] >= pd.to_datetime(start_date)) & (
+        df["date"] <= pd.to_datetime(end_date)
+    )
     filtered_df = df.loc[mask]
 
     # Разделяем доходы и расходы
-    income_df = filtered_df[filtered_df['type'] == 'income']
-    expense_df = filtered_df[filtered_df['type'] == 'expense']
+    income_df = filtered_df[filtered_df["type"] == "income"]
+    expense_df = filtered_df[filtered_df["type"] == "expense"]
 
     # Вкладки для разных графиков
-    tab1, tab3, tab4 = st.tabs(["Total Overview",
-                                #   "By Category",
-                                "Daily Trends",
-                                "Statistics"])
+    tab1, tab3, tab4 = st.tabs(
+        [
+            "Total Overview",
+            #   "By Category",
+            "Daily Trends",
+            "Statistics",
+        ]
+    )
 
     with tab1:
         # График общих доходов/расходов
         st.subheader("Income vs Expenses")
-        summary = filtered_df.groupby('type')['amount'].sum().reset_index()
-        fig = px.pie(summary, values='amount', names='type',
-                     title="Income/Expense Distribution")
+        summary = filtered_df.groupby("type")["amount"].sum().reset_index()
+        fig = px.pie(
+            summary, values="amount", names="type", title="Income/Expense Distribution"
+        )
         st.plotly_chart(fig, use_container_width=True)
 
         # График по времени
         st.subheader("Over Time")
-        time_df = filtered_df.groupby(['date', 'type'])['amount'].sum().reset_index()
-        fig = px.line(time_df, x='date', y='amount', color='type',
-                      title="Income and Expenses Over Time")
+        time_df = filtered_df.groupby(["date", "type"])["amount"].sum().reset_index()
+        fig = px.line(
+            time_df,
+            x="date",
+            y="amount",
+            color="type",
+            title="Income and Expenses Over Time",
+        )
         st.plotly_chart(fig, use_container_width=True)
 
     # with tab2:
@@ -310,9 +326,14 @@ def render_analytics():
     with tab3:
         # Ежедневные тренды
         st.subheader("Daily Trends")
-        daily_df = filtered_df.groupby(['date', 'type'])['amount'].sum().reset_index()
-        fig = px.bar(daily_df, x='date', y='amount', color='type',
-                     title="Daily Income and Expenses")
+        daily_df = filtered_df.groupby(["date", "type"])["amount"].sum().reset_index()
+        fig = px.bar(
+            daily_df,
+            x="date",
+            y="amount",
+            color="type",
+            title="Daily Income and Expenses",
+        )
         st.plotly_chart(fig, use_container_width=True)
 
     with tab4:
@@ -321,23 +342,26 @@ def render_analytics():
 
         # Средние значения
         if not expense_df.empty:
-            avg_expense_per_day = expense_df.groupby('date')['amount'].sum().mean()
+            avg_expense_per_day = expense_df.groupby("date")["amount"].sum().mean()
             st.metric("Average Daily Expenses", f"{avg_expense_per_day:.2f}")
 
         if not income_df.empty:
-            avg_income_per_day = income_df.groupby('date')['amount'].sum().mean()
+            avg_income_per_day = income_df.groupby("date")["amount"].sum().mean()
             st.metric("Average Daily Income", f"{avg_income_per_day:.2f}")
 
         # Суммарные значения
         col1, col2 = st.columns(2)
         with col1:
-            total_income = income_df['amount'].sum()
+            total_income = income_df["amount"].sum()
             st.metric("Total Income", f"{total_income:.2f}")
         with col2:
-            total_expense = expense_df['amount'].sum()
+            total_expense = expense_df["amount"].sum()
             st.metric("Total Expenses", f"{total_expense:.2f}")
 
         # Баланс
         balance = total_income - total_expense
-        st.metric("Balance", f"{balance:.2f}",
-                  delta_color="inverse" if balance < 0 else "normal")
+        st.metric(
+            "Balance",
+            f"{balance:.2f}",
+            delta_color="inverse" if balance < 0 else "normal",
+        )

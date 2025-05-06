@@ -55,8 +55,6 @@ class FinancialRecord(Base):
     amount: Mapped[float] = mapped_column(Float)
     date: Mapped[datetime.datetime] = mapped_column(DateTime)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-
     user: Mapped["User"] = relationship(back_populates="records")
     category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
-
     category: Mapped["Category"] = relationship(back_populates="financial_records")

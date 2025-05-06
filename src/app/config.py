@@ -26,6 +26,7 @@ class RedisSettings(BaseSettings):
 class APIEndpoints(BaseSettings):
     base_url: str = "https://localhost:8000"
     financial_records: str = "/financial_records/"
+    categories: str = "/categories/"
     auth_login: str = "/users/login/"
     auth_logout: str = "/users/logout/"
     auth_register: str = "/users/register/"
@@ -33,6 +34,10 @@ class APIEndpoints(BaseSettings):
     @property
     def financial_records_url(self):
         return f"{self.base_url}{self.financial_records}"
+
+    @property
+    def categories_url(self):
+        return f"{self.base_url}{self.categories}"
 
     @property
     def login_url(self):
@@ -52,8 +57,6 @@ class APIEndpoints(BaseSettings):
 
 
 class Settings(BaseSettings):
-    api_url_records: str = "http://localhost:8000/financial_records/"
-    api_url_categories: str = "http://localhost:8000/categories/"
     api_endpoints: APIEndpoints = APIEndpoints()
     auth_jwt: AuthJWT = AuthJWT()
     db: DbSettings = DbSettings()
