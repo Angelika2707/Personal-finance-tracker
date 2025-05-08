@@ -1,6 +1,6 @@
-import datetime
 import pytest
 from httpx import Client, Response, RequestError
+
 from src.app.frontend.api_helpers import (
     get_data,
     create_record,
@@ -184,8 +184,12 @@ def test_get_categories_request_error(mock_client):
 
 
 def test_create_category_success(mock_client, mocker):
-    mocker.patch("src.app.frontend.api_helpers.get_categories", return_value=[])
-    mock_client.post.return_value = Response(200, json={"name": "Travel", "user_id": 1})
+    mocker.patch(
+        "src.app.frontend.api_helpers.get_categories", return_value=[]
+    )
+    mock_client.post.return_value = Response(
+        200, json={"name": "Travel", "user_id": 1}
+    )
     result = create_category({"name": "travel"})
     assert result == {"name": "Travel", "user_id": 1}
 
@@ -199,13 +203,17 @@ def test_create_category_success(mock_client, mocker):
     ],
 )
 def test_create_category_invalid_cases(mocker, existing, input_data, expected):
-    mocker.patch("src.app.frontend.api_helpers.get_categories", return_value=existing)
+    mocker.patch(
+        "src.app.frontend.api_helpers.get_categories", return_value=existing
+    )
     result = create_category(input_data)
     assert result is expected
 
 
 def test_create_category_request_error(mock_client, mocker):
-    mocker.patch("src.app.frontend.api_helpers.get_categories", return_value=[])
+    mocker.patch(
+        "src.app.frontend.api_helpers.get_categories", return_value=[]
+    )
     mock_client.post.side_effect = RequestError("Connection error")
     result = create_category({"name": "Test"})
     assert result is None

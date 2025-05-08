@@ -5,6 +5,8 @@ BASE_DIR = Path(__file__).parent.parent.parent
 
 
 class AuthJWT(BaseSettings):
+    """JWT authentication configuration."""
+
     private_key_path: Path = BASE_DIR / "certs/jwt-private.pem"
     public_key_path: Path = BASE_DIR / "certs/jwt-public.pem"
     cert_path: Path = BASE_DIR / "certs/cert.pem"
@@ -13,11 +15,15 @@ class AuthJWT(BaseSettings):
 
 
 class DbSettings(BaseSettings):
+    """Database connection configuration."""
+
     db_url: str = f"sqlite+aiosqlite:///{BASE_DIR}/db.sqlite3"
     db_echo: bool = True
 
 
 class RedisSettings(BaseSettings):
+    """Redis server connection settings."""
+
     host: str = "localhost"
     port: int = 6379
     db: int = 0
@@ -25,6 +31,8 @@ class RedisSettings(BaseSettings):
 
 
 class APIEndpoints(BaseSettings):
+    """API endpoint URLs configuration."""
+
     base_url: str = "https://localhost:8000"
     financial_records: str = "/financial_records/"
     categories: str = "/categories/"
@@ -58,6 +66,8 @@ class APIEndpoints(BaseSettings):
 
 
 class Settings(BaseSettings):
+    """Root configuration container aggregating all service settings."""
+
     api_endpoints: APIEndpoints = APIEndpoints()
     auth_jwt: AuthJWT = AuthJWT()
     db: DbSettings = DbSettings()

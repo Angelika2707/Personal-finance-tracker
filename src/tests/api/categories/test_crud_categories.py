@@ -33,7 +33,9 @@ def fake_category():
 @pytest.mark.asyncio
 async def test_get_categories(session, fake_category, user_id, expected_count):
     mock_result = MagicMock()
-    mock_result.scalars.return_value.all.return_value = [fake_category] * expected_count
+    mock_result.scalars.return_value.all.return_value = [
+        fake_category
+    ] * expected_count
 
     session.execute.return_value = mock_result
 
@@ -88,7 +90,9 @@ async def test_get_category(
 
     session.execute.return_value = mock_result
 
-    result = await get_category(session, category_id=category_id, user_id=user_id)
+    result = await get_category(
+        session, category_id=category_id, user_id=user_id
+    )
 
     if expected_result == "found":
         assert result == fake_category
@@ -105,7 +109,9 @@ async def test_get_category(
     ],
 )
 @pytest.mark.asyncio
-async def test_update_category(session, fake_category, update_data, expected_name):
+async def test_update_category(
+    session, fake_category, update_data, expected_name
+):
     session.commit = AsyncMock()
     category_update = CategoryUpdate(**update_data)
 

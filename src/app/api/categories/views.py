@@ -19,6 +19,7 @@ async def get_categories(
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
     current_user_id: int = Depends(get_current_user),
 ):
+    """Retrieves all categories belonging to the user."""
     return await crud.get_categories(session=session, user_id=current_user_id)
 
 
@@ -28,6 +29,7 @@ async def create_category(
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
     current_user_id: int = Depends(get_current_user),
 ):
+    """Creates a new category for the user."""
     return await crud.create_category(
         session=session, category_in=category_in, user_id=current_user_id
     )
@@ -39,6 +41,7 @@ async def get_category(
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
     current_user_id: int = Depends(get_current_user),
 ):
+    """Returns category if it belongs to the user."""
     category = await crud.get_category(
         session=session, category_id=category_id, user_id=current_user_id
     )
@@ -58,6 +61,7 @@ async def update_category(
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
     current_user_id: int = Depends(get_current_user),
 ):
+    """Updates an existing category that belongs to the user."""
     category = await crud.get_category(
         session=session, category_id=category_id, user_id=current_user_id
     )
@@ -81,6 +85,7 @@ async def delete_category(
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
     current_user_id: int = Depends(get_current_user),
 ):
+    """Deletes category that belongs to the user."""
     category = await crud.get_category(
         session=session,
         category_id=category_id,

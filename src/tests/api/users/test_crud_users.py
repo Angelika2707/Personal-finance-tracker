@@ -28,7 +28,10 @@ async def test_create_user(session):
 
     assert isinstance(created_user, User)
     assert created_user.username == user_data["username"]
-    assert created_user.hashed_password.decode("utf-8") == user_data["hashed_password"]
+    assert (
+        created_user.hashed_password.decode("utf-8")
+        == user_data["hashed_password"]
+    )
     session.add.assert_any_call(created_user)
     assert session.add.call_count == 1 + 6
     session.flush.assert_awaited_once()
@@ -40,7 +43,10 @@ async def test_create_user(session):
 @pytest.mark.parametrize(
     "username, expected_user",
     [
-        ("testuser", User(id=1, username="testuser", hashed_password="password")),
+        (
+            "testuser",
+            User(id=1, username="testuser", hashed_password="password"),
+        ),
         ("unknown", None),
     ],
 )

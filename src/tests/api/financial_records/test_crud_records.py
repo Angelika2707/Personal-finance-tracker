@@ -111,7 +111,9 @@ async def test_get_financial_records_multiple_users(session, user_id):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("record_exists", [True, False])
-async def test_get_financial_record(session, fake_financial_record, record_exists):
+async def test_get_financial_record(
+    session, fake_financial_record, record_exists
+):
     mock_result = MagicMock()
     mock_result.scalars.return_value.first.return_value = (
         fake_financial_record if record_exists else None
@@ -148,7 +150,9 @@ async def test_create_financial_record(session):
 
     financial_record_in = FinancialRecordCreate(**data)
 
-    result = await create_financial_record(session, financial_record_in, user_id=42)
+    result = await create_financial_record(
+        session, financial_record_in, user_id=42
+    )
 
     assert isinstance(result, FinancialRecord)
     assert result.user_id == 42
@@ -167,7 +171,9 @@ async def test_create_financial_record(session):
         {"description": "Changed", "amount": 123.45},
     ],
 )
-async def test_update_financial_record(session, fake_financial_record, update_data):
+async def test_update_financial_record(
+    session, fake_financial_record, update_data
+):
     session.commit = AsyncMock()
 
     default_data = {
@@ -181,7 +187,9 @@ async def test_update_financial_record(session, fake_financial_record, update_da
     default_data.update(update_data)
 
     update = FinancialRecordUpdate(**default_data)
-    updated = await update_financial_record(session, fake_financial_record, update)
+    updated = await update_financial_record(
+        session, fake_financial_record, update
+    )
 
     for key, value in update_data.items():
         assert getattr(updated, key) == value

@@ -33,7 +33,9 @@ async def test_increment_failed_attempts(mock_redis, attempts, ttl_called):
     mock_redis.incr.assert_awaited_once_with(f"failed_attempts:{username}")
 
     if ttl_called:
-        mock_redis.expire.assert_awaited_once_with(f"failed_attempts:{username}", 300)
+        mock_redis.expire.assert_awaited_once_with(
+            f"failed_attempts:{username}", 300
+        )
     else:
         mock_redis.expire.assert_not_awaited()
 

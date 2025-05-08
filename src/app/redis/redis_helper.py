@@ -4,6 +4,8 @@ from app.config import settings
 
 
 class RedisHelper:
+    """Helper class for interacting with Redis."""
+
     def __init__(
         self,
         host: str = settings.redis.host,

@@ -2,7 +2,7 @@ import pytest
 import streamlit as st
 from httpx import Client, Response, RequestError
 
-from src.app.frontend.auth_page import register_user, login_user, render_auth_page
+from src.app.frontend.auth_page import register_user, login_user
 
 
 @pytest.fixture
@@ -31,10 +31,14 @@ def mock_streamlit(mocker):
         (500, None, (False, "Failed to register")),
     ],
 )
-def test_register_user(mocker, mock_client, reg_status, login_return, expected):
+def test_register_user(
+    mocker, mock_client, reg_status, login_return, expected
+):
     mock_client.post.return_value = Response(reg_status)
     if reg_status == 200:
-        mocker.patch("src.app.frontend.auth_page.login_user", return_value=login_return)
+        mocker.patch(
+            "src.app.frontend.auth_page.login_user", return_value=login_return
+        )
     result = register_user("user", "password")
     assert result == expected
 
@@ -53,7 +57,11 @@ def test_register_user_request_error(mock_client):
             200,
             "token123",
             (True, "You successfully registered!"),
-            {"logged_in": True, "username": "username", "access_token": "token123"},
+            {
+                "logged_in": True,
+                "username": "username",
+                "access_token": "token123",
+            },
         ),
         (401, None, (False, "Failed to login"), {}),
     ],

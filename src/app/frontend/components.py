@@ -14,6 +14,7 @@ from app.frontend.api_helpers import (
 
 
 def render_create_form():
+    """Renders the form for creating a new financial record."""
     with st.expander("➕ Add financial record", expanded=False):
         with st.form("create_form"):
             record_type = st.selectbox("Type", ["Income", "Expense"])
@@ -37,7 +38,8 @@ def render_create_form():
                 if selected_category == "➕ Add And Select New Category":
                     if not new_category or not new_category.strip():
                         st.info(
-                            "Enter a name for the new category to add it to the list"
+                            "Enter a name for the new category "
+                            "to add it to the list"
                         )
                         return
                     created = create_category({"name": new_category.strip()})
@@ -77,6 +79,7 @@ def render_create_form():
 
 
 def render_edit_form(record):
+    """Renders the form for editing an existing financial record."""
     with st.form(f"edit_form_{record['id']}"):
         edit_key = f"edit_mode_{record['id']}"
         st.markdown(f"#### ✏️ Edit Record {record['id']}")
@@ -86,7 +89,9 @@ def render_edit_form(record):
             index=0 if record["type"].lower() == "income" else 1,
         )
         description = st.text_input("Description", value=record["description"])
-        amount = st.number_input("Amount", step=100.00, value=float(record["amount"]))
+        amount = st.number_input(
+            "Amount", step=100.00, value=float(record["amount"])
+        )
         record_datetime = datetime.fromisoformat(record["date"])
         date = st.date_input("Date", value=record_datetime.date())
         time = st.time_input("Time", value=record_datetime.time(), step=60)
@@ -122,7 +127,10 @@ def render_edit_form(record):
                 return
             if selected_category == "➕ Add And Select New Category":
                 if not new_category or not new_category.strip():
-                    st.info("Enter a name for the new category to add it to the list")
+                    st.info(
+                        "Enter a name for the new category "
+                        "to add it to the list"
+                    )
                     return
                 created = create_category({"name": new_category.strip()})
                 if created:
@@ -162,6 +170,7 @@ def render_edit_form(record):
 
 
 def render_records():
+    """Displays all financial records in a tabular layout."""
     st.header("All financial records")
     records = st.session_state.records
     if not records:
@@ -173,12 +182,15 @@ def render_records():
         edit_key = f"edit_mode_{record['id']}"
         if edit_key not in st.session_state:
             st.session_state[edit_key] = False
-        col1, col2, col3, col4, col5, col6 = st.columns([1.25, 3, 1.5, 2, 2.5, 1.75])
+        col1, col2, col3, col4, col5, col6 = st.columns(
+            [1.25, 3, 1.5, 2, 2.5, 1.75]
+        )
         with col1:
             color = "green" if record["type"] == "income" else "red"
             text = record["type"].capitalize()
             st.markdown(
-                f"<span style='color: {color}; font-weight: 700;'>{text}</span>",
+                f"<span style='color: {color}; "
+                f"font-weight: 700;'>{text}</span>",
                 unsafe_allow_html=True,
             )
         with col2:
@@ -192,7 +204,8 @@ def render_records():
         with col5:
             category_name = category_map.get(record["category_id"])
             st.markdown(
-                f"<span class='badge'>{category_name}</span>", unsafe_allow_html=True
+                f"<span class='badge'>{category_name}</span>",
+                unsafe_allow_html=True,
             )
         with col6:
             cols_btn = st.columns([1, 1])
@@ -213,12 +226,14 @@ def render_records():
 
 
 def render_categories():
+    """Displays and manages financial categories."""
     st.header("Categories")
     for category in st.session_state.categories:
         col1, col2, col3 = st.columns([6, 2, 2])
         with col1:
             st.markdown(
-                f"<span class='badge'>{category['name']}</span>", unsafe_allow_html=True
+                f"<span class='badge'>{category['name']}</span>",
+                unsafe_allow_html=True,
             )
         with col2:
             st.write("")
@@ -251,31 +266,27 @@ def render_categories():
 
 
 def render_analytics():
+    """Renders financial analytics."""
     st.header("Financial Analytics")
 
-    # Получаем данные из сессии
     records = st.session_state.records
     if not records:
         st.info("No records available for analysis")
         return
 
-    # Конвертируем в DataFrame
     df = pd.DataFrame(records)
     df["date"] = pd.to_datetime(df["date"])
     df["amount"] = pd.to_numeric(df["amount"])
 
-    # Создаём отображение category_id → name
     category_map = {c["id"]: c["name"] for c in st.session_state.categories}
     df["category_name"] = df["category_id"].map(category_map)
 
-    # Фильтры даты
     col1, col2 = st.columns(2)
     with col1:
         start_date = st.date_input("Start date", value=df["date"].min().date())
     with col2:
         end_date = st.date_input("End date", value=df["date"].max().date())
 
-    # Фильтрация данных
     mask = (df["date"] >= pd.to_datetime(start_date)) & (
         df["date"] <= pd.to_datetime(end_date)
     )
@@ -305,17 +316,20 @@ def render_analytics():
     )
 
     with tab1:
-        # График общих доходов/расходов
         st.subheader("Income vs Expenses")
         summary = filtered_df.groupby("type")["amount"].sum().reset_index()
         fig = px.pie(
-            summary, values="amount", names="type", title="Income/Expense Distribution"
+            summary,
+            values="amount",
+            names="type",
+            title="Income/Expense Distribution",
         )
         st.plotly_chart(fig, use_container_width=True)
 
-        # График по времени
         st.subheader("Over Time")
-        time_df = filtered_df.groupby(["date", "type"])["amount"].sum().reset_index()
+        time_df = (
+            filtered_df.groupby(["date", "type"])["amount"].sum().reset_index()
+        )
         fig = px.line(
             time_df,
             x="date",
@@ -328,7 +342,6 @@ def render_analytics():
     with tab2:
         st.subheader("Category Analytics")
 
-        # Проверка наличия данных
         if (
             not hasattr(st.session_state, "categories")
             or not st.session_state.categories
@@ -337,11 +350,13 @@ def render_analytics():
         elif filtered_df.empty:
             st.warning("No records available for selected period")
         else:
-            # Создаем маппинг ID категорий к названиям
-            category_map = {c["id"]: c["name"] for c in st.session_state.categories}
-            filtered_df["category_name"] = filtered_df["category_id"].map(category_map)
+            category_map = {
+                c["id"]: c["name"] for c in st.session_state.categories
+            }
+            filtered_df["category_name"] = filtered_df["category_id"].map(
+                category_map
+            )
 
-            # Фильтр по категориям
             selected_categories = st.multiselect(
                 "Select categories to analyze",
                 options=list(category_map.values()),
@@ -353,7 +368,6 @@ def render_analytics():
                     filtered_df["category_name"].isin(selected_categories)
                 ]
 
-            # График доходов/расходов по категориям
             st.markdown("### Income vs Expenses by Category")
             cat_df = (
                 filtered_df.groupby(["category_name", "type"])["amount"]
@@ -378,7 +392,6 @@ def render_analytics():
                 )
                 st.plotly_chart(fig, use_container_width=True)
 
-                # Круговая диаграмма для расходов
                 st.markdown("### Expenses Distribution")
                 expense_df = filtered_df[filtered_df["type"] == "expense"]
                 if not expense_df.empty:
@@ -397,9 +410,10 @@ def render_analytics():
                 st.warning("No data available for selected filters")
 
     with tab3:
-        # Ежедневные тренды
         st.subheader("Daily Trends")
-        daily_df = filtered_df.groupby(["date", "type"])["amount"].sum().reset_index()
+        daily_df = (
+            filtered_df.groupby(["date", "type"])["amount"].sum().reset_index()
+        )
         fig = px.bar(
             daily_df,
             x="date",
@@ -410,19 +424,20 @@ def render_analytics():
         st.plotly_chart(fig, use_container_width=True)
 
     with tab4:
-        # Статистика
         st.subheader("Financial Statistics")
 
-        # Средние значения
         if not expense_df.empty:
-            avg_expense_per_day = expense_df.groupby("date")["amount"].sum().mean()
+            avg_expense_per_day = (
+                expense_df.groupby("date")["amount"].sum().mean()
+            )
             st.metric("Average Daily Expenses", f"{avg_expense_per_day:.2f}")
 
         if not income_df.empty:
-            avg_income_per_day = income_df.groupby("date")["amount"].sum().mean()
+            avg_income_per_day = (
+                income_df.groupby("date")["amount"].sum().mean()
+            )
             st.metric("Average Daily Income", f"{avg_income_per_day:.2f}")
 
-        # Суммарные значения
         col1, col2 = st.columns(2)
         with col1:
             total_income = income_df["amount"].sum()
@@ -431,7 +446,6 @@ def render_analytics():
             total_expense = expense_df["amount"].sum()
             st.metric("Total Expenses", f"{total_expense:.2f}")
 
-        # Баланс
         balance = total_income - total_expense
         st.metric(
             "Balance",

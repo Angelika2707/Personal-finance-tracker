@@ -20,6 +20,7 @@ async def get_financial_records(
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
     current_user_id: int = Depends(get_current_user),
 ):
+    """Retrieves all financial records belonging to the user."""
     return await crud.get_financial_records(
         session=session,
         user_id=current_user_id,
@@ -32,6 +33,7 @@ async def create_financial_record(
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
     current_user_id: int = Depends(get_current_user),
 ):
+    """Creates a new financial record for the user."""
     return await crud.create_financial_record(
         session=session,
         financial_record_in=financial_record_in,
@@ -41,10 +43,11 @@ async def create_financial_record(
 
 @router.get("/{financial_record_id}", response_model=FinancialRecord)
 async def get_financial_record(
-    financial_record_id,
+    financial_record_id: int,
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
     current_user_id: int = Depends(get_current_user),
 ):
+    """Returns financial record if it belongs to the user."""
     financial_record = await crud.get_financial_record(
         session=session,
         financial_record_id=financial_record_id,
@@ -61,11 +64,12 @@ async def get_financial_record(
 
 @router.put("/{financial_record_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def update_financial_record(
-    financial_record_id,
+    financial_record_id: int,
     financial_record_update: FinancialRecordUpdate,
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
     current_user_id: int = Depends(get_current_user),
 ):
+    """Completely updates financial record that belongs to the user."""
     financial_record = await crud.get_financial_record(
         session=session,
         financial_record_id=financial_record_id,
@@ -87,11 +91,12 @@ async def update_financial_record(
 
 @router.patch("/{financial_record_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def update_financial_record_partial(
-    financial_record_id,
+    financial_record_id: int,
     financial_record_update: FinancialRecordUpdatePartial,
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
     current_user_id: int = Depends(get_current_user),
 ):
+    """Partially updates financial record that belongs to the user."""
     financial_record = await crud.get_financial_record(
         session=session,
         financial_record_id=financial_record_id,
@@ -111,12 +116,15 @@ async def update_financial_record_partial(
     )
 
 
-@router.delete("/{financial_record_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{financial_record_id}", status_code=status.HTTP_204_NO_CONTENT
+)
 async def delete_financial_record(
-    financial_record_id,
+    financial_record_id: int,
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
     current_user_id: int = Depends(get_current_user),
 ):
+    """Deletes financial record that belongs to the user."""
     financial_record = await crud.get_financial_record(
         session=session,
         financial_record_id=financial_record_id,
