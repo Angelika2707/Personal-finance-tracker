@@ -33,10 +33,20 @@ packages = [
     { include = "app", from = "src" }
 ]
 
+[tool.pytest.ini_options]
+pythonpath = [
+  "."
+]
+
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"
 black = "^25.1.0"
 bandit = "^1.8.3"
+docstr-coverage = "^2.3.2"
+pytest-cov = "^6.1.1"
+flake8 = "^7.2.0"
+pytest-mock = "^3.14.0"
+pytest-asyncio = "^0.26.0"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
