@@ -109,7 +109,7 @@ poetry run streamlit run src/app/frontend/main.py
 
 ### Maintainability
 
-### **1. Documentation Coverage**  
+#### **1. Documentation Coverage**  
 **Tool**: `docstr-coverage`     
 **Purpose**: Verify docstring presence for classes/methods (excluding properties and module-level docs)     
 **Threshold**: Minimum 90% required     
@@ -119,7 +119,7 @@ poetry run streamlit run src/app/frontend/main.py
 Total coverage: 91.2%  -  Grade: Great
 ```
 
-### **2. Test Coverage**  
+#### **2. Test Coverage**  
 **Tool**: `pytest-cov`      
 **Purpose**: Measure code coverage      
 **Threshold**: Minimum 60% required     
@@ -129,7 +129,7 @@ Total coverage: 91.2%  -  Grade: Great
 Required test coverage of 60% reached. Total coverage: 85.65%
 ```
 
-### **3. PEP8 Compliance**  
+#### **3. PEP8 Compliance**  
 **Tool**: `flake8`      
 **Purpose**: Enforce Python style guide adherence       
 **Threshold**: Number of flake8 errors should be zero       
@@ -139,6 +139,10 @@ Required test coverage of 60% reached. Total coverage: 85.65%
 ```
 
 ### Reliability
+#### **Error rate for API responses in the application**
+**Tool**:                 
+**Threshold**: <= 1%                    
+
 ![Error rate](/error_rate.png)
 
 ### Performance
@@ -146,8 +150,10 @@ Performance tests were conducted using Apache Benchmark (ab) with the following 
 - **Number of requests:** 1000 (-n 1000)
 - **Concurrency level:** 10 simultaneous connections (-c 10)
 - **Tested endpoints:** GET https://127.0.0.1:8000/financial_records/, GET https://127.0.0.1:8000/categories/, POST https://127.0.0.1:8000/users/register
+
+**Threshold:** Less than 300 milliseconds for 95% of API requests    
   
-1. Checking GET on financial_records
+**1. Checking GET on financial_records**
 ```bash
 > ab -n 1000 -c 10 https://127.0.0.1:8000/financial_records/
 Document Path:          /financial_records/
@@ -183,7 +189,7 @@ Percentage of the requests served within a certain time (ms)
   99%    323
  100%    401 (longest request)
 ```
-2. Checking GET on categories
+**2. Checking GET on categories**
 ```bash
 > ab -n 1000 -c 10 https://127.0.0.1:8000/categories/
 Document Path:          /categories
@@ -219,7 +225,7 @@ Percentage of the requests served within a certain time (ms)
   99%    270
  100%    284 (longest request)
 ```
-3. Checking POST on user/register
+**3. Checking POST on user/register**
 ```bash
 > ab -n 1000 -c 10 -p test_input.json -T application/json https://127.0.0.1:8000/users/register
 Document Path:          /users/register
@@ -261,7 +267,7 @@ Percentage of the requests served within a certain time (ms)
 
 
 ### Security
-### **1. Bandit Security Scan**  
+#### **1. Bandit Security Scan**  
 **Tool**: `bandit`     
 **Purpose**: Identify common security vulnerabilities             
 **Threshold**: Bandit report should not contain critical vulnerabilities          
@@ -288,7 +294,7 @@ Run metrics:
                 High: 0
 Files skipped (0):
 ```
-### **2. Authentication Protection**
+#### **2. Authentication Protection**
 **Purpose**: Prevent brute-force attacks        
 **Threshold**: Temporarily lock a user account after 5 consecutive failed login attempts. A notification is sent to the user upon lockout       
 **Result**: Implemented in the application logic        
