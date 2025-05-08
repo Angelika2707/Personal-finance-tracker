@@ -186,8 +186,126 @@ Required test coverage of 60% reached. Total coverage: 85.65%
 ```
 
 ### Reliability
+![Error rate](/error_rate.png)
 
 ### Performance
+Performance tests were conducted using Apache Benchmark (ab) with the following parameters:
+- **Number of requests:** 1000 (-n 1000)
+- **Concurrency level:** 10 simultaneous connections (-c 10)
+- **Tested endpoints:** GET https://127.0.0.1:8000/financial_records/, GET https://127.0.0.1:8000/categories/, POST https://127.0.0.1:8000/users/register
+  
+1. Checking GET on financial_records
+```bash
+> ab -n 1000 -c 10 https://127.0.0.1:8000/financial_records/
+Document Path:          /financial_records/
+Document Length:        30 bytes
+
+Concurrency Level:      10
+Time taken for tests:   8.550 seconds
+Complete requests:      1000
+Failed requests:        0
+Non-2xx responses:      1000
+Total transferred:      184000 bytes
+HTML transferred:       30000 bytes
+Requests per second:    116.95 [#/sec] (mean)
+Time per request:       85.505 [ms] (mean)
+Time per request:       8.550 [ms] (mean, across all concurrent requests)
+Transfer rate:          21.01 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       18   67  31.6     61     371
+Processing:     2   18  16.2     14     266
+Waiting:        1   17  13.6     14     192
+Total:         22   85  36.1     75     401
+
+Percentage of the requests served within a certain time (ms)
+  50%     75
+  66%     81
+  75%     89
+  80%     95
+  90%    114
+  95%    141
+  98%    178
+  99%    323
+ 100%    401 (longest request)
+```
+2. Checking GET on categories
+```bash
+> ab -n 1000 -c 10 https://127.0.0.1:8000/categories/
+Document Path:          /categories
+Document Length:        0 bytes
+
+Concurrency Level:      10
+Time taken for tests:   8.897 seconds
+Complete requests:      1000
+Failed requests:        0
+Non-2xx responses:      1000
+Total transferred:      173000 bytes
+HTML transferred:       0 bytes
+Requests per second:    112.40 [#/sec] (mean)
+Time per request:       88.971 [ms] (mean)
+Time per request:       8.897 [ms] (mean, across all concurrent requests)
+Transfer rate:          18.99 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       16   70  37.3     62     272
+Processing:     2   18  13.3     16     150
+Waiting:        1   17  13.0     15     150
+Total:         18   88  39.8     76     284
+
+Percentage of the requests served within a certain time (ms)
+  50%     76
+  66%     84
+  75%     92
+  80%     96
+  90%    131
+  95%    185
+  98%    232
+  99%    270
+ 100%    284 (longest request)
+```
+3. Checking POST on user/register
+```bash
+> ab -n 1000 -c 10 -p test_input.json -T application/json https://127.0.0.1:8000/users/register
+Document Path:          /users/register
+Document Length:        0 bytes
+
+Concurrency Level:      10
+Time taken for tests:   8.395 seconds
+Complete requests:      1000
+Failed requests:        0
+Non-2xx responses:      1000
+Total transferred:      177000 bytes
+Total body sent:        220000
+HTML transferred:       0 bytes
+Requests per second:    119.12 [#/sec] (mean)
+Time per request:       83.947 [ms] (mean)
+Time per request:       8.395 [ms] (mean, across all concurrent requests)
+Transfer rate:          20.59 [Kbytes/sec] received
+                        25.59 kb/s sent
+                        46.18 kb/s total
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:       29   65  24.1     61     205
+Processing:     2   17  15.3     13     171
+Waiting:        2   16  14.8     13     171
+Total:         43   82  28.3     73     259
+
+Percentage of the requests served within a certain time (ms)
+  50%     73
+  66%     82
+  75%     90
+  80%     95
+  90%    109
+  95%    141
+  98%    182
+  99%    202
+ 100%    259 (longest request)
+```  
+
 
 ### Security
 ### **1. Bandit Security Scan**  
