@@ -140,7 +140,14 @@ Required test coverage of 60% reached. Total coverage: 85.65%
 
 ### Reliability
 #### **Error rate for API responses in the application**
-**Tool**:                 
+**Tool**: 
+Manual HTTP Status Code Analysis
+
+All responses with 4xx and 5xx status codes were considered errors.
+Locally launched server logged the statistics of all requests and responses after the launch.
+Endpoint /monitoring/error-stats returned current percent of errors.
+The resulting error rate was counted using the formula error_rate = (number of error status codes / number of requests) * 100%.
+
 **Threshold**: <= 1%                    
 
 ![Error rate](/error_rate.png)
