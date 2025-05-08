@@ -13,6 +13,7 @@ def encode_jwt(
     expire_minutes: int = settings.auth_jwt.access_token_expire_minutes,
     expire_timedelta: timedelta | None = None,
 ) -> str:
+    """Encodes JWT token."""
     to_encode = payload.copy()
     now = datetime.utcnow()
     if expire_timedelta:
@@ -36,6 +37,7 @@ def decode_jwt(
     public_key: str = settings.auth_jwt.public_key_path.read_text(),
     algorithm: str = settings.auth_jwt.algorithm,
 ) -> dict:
+    """Decodes and verifies JWT token."""
     decoded = jwt.decode(
         token,
         public_key,
@@ -47,6 +49,7 @@ def decode_jwt(
 def hash_password(
     password: str,
 ) -> bytes:
+    """Generates hash for password storage."""
     salt = bcrypt.gensalt()
     pwd_bytes: bytes = password.encode()
     return bcrypt.hashpw(pwd_bytes, salt)
@@ -56,6 +59,7 @@ def validate_password(
     password: str,
     hashed_password: bytes,
 ) -> bool:
+    """Verifies password matches stored hash."""
     return bcrypt.checkpw(
         password=password.encode(),
         hashed_password=hashed_password,

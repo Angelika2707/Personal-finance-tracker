@@ -11,6 +11,7 @@ async def get_current_user(
     request: Request,
     session: AsyncSession = Depends(db_helper.scoped_session_dependency),
 ):
+    """Authenticates user by validating JWT access token from cookies."""
     token = request.cookies.get("access_token")
 
     if not token:

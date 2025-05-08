@@ -10,6 +10,7 @@ async def create_user(
     session: AsyncSession,
     user_in: UserCreate,
 ) -> User:
+    """Creates new user."""
     user = User(**user_in.model_dump())
     session.add(user)
     await session.flush()
@@ -36,6 +37,7 @@ async def get_user_by_username(
     session: AsyncSession,
     username: str,
 ):
+    """Retrieves user by username."""
     stmt = select(User).where(User.username == username)
     result: Result = await session.execute(stmt)
     user = result.scalars().first()

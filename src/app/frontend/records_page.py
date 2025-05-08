@@ -11,6 +11,7 @@ from app.frontend.components import (
 
 
 def init_session_state():
+    """Initializes or refreshes session state for records and categories."""
     if "records" not in st.session_state or st.session_state.get(
         "refresh_records", False
     ):
@@ -24,6 +25,7 @@ def init_session_state():
 
 
 def render_records_page():
+    """Renders the main page for managing financial records."""
     st.markdown(
         """
             <style>
@@ -42,7 +44,7 @@ def render_records_page():
                     display: inline-block;
                     background-color: #e0f2fe;
                     color: #1e3a8a;
-                    padding: 4px 8px; 
+                    padding: 4px 8px;
                     border-radius: 12px;
                     font-size: 0.9rem;
                     font-weight: 700;

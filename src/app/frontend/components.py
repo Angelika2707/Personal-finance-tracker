@@ -1,9 +1,9 @@
+import io
 from datetime import datetime
-from app.frontend.api_helpers import generate_pdf_report
+
 import pandas as pd
 import plotly.express as px
 import streamlit as st
-import io
 
 from app.frontend.api_helpers import (
     create_record,
@@ -12,9 +12,11 @@ from app.frontend.api_helpers import (
     create_category,
     delete_category,
 )
+from app.frontend.api_helpers import generate_pdf_report
 
 
 def render_create_form():
+    """Renders the form for creating a new financial record."""
     with st.expander("➕ Add financial record", expanded=False):
         with st.form("create_form"):
             record_type = st.selectbox("Type", ["Income", "Expense"])
@@ -38,7 +40,8 @@ def render_create_form():
                 if selected_category == "➕ Add And Select New Category":
                     if not new_category or not new_category.strip():
                         st.info(
-                            "Enter a name for the new category to add it to the list"
+                            "Enter a name for the new category "
+                            "to add it to the list"
                         )
                         return
                     created = create_category({"name": new_category.strip()})
@@ -78,6 +81,7 @@ def render_create_form():
 
 
 def render_edit_form(record):
+    """Renders the form for editing an existing financial record."""
     with st.form(f"edit_form_{record['id']}"):
         edit_key = f"edit_mode_{record['id']}"
         st.markdown(f"#### ✏️ Edit Record {record['id']}")
@@ -87,7 +91,9 @@ def render_edit_form(record):
             index=0 if record["type"].lower() == "income" else 1,
         )
         description = st.text_input("Description", value=record["description"])
-        amount = st.number_input("Amount", step=100.00, value=float(record["amount"]))
+        amount = st.number_input(
+            "Amount", step=100.00, value=float(record["amount"])
+        )
         record_datetime = datetime.fromisoformat(record["date"])
         date = st.date_input("Date", value=record_datetime.date())
         time = st.time_input("Time", value=record_datetime.time(), step=60)
@@ -123,7 +129,10 @@ def render_edit_form(record):
                 return
             if selected_category == "➕ Add And Select New Category":
                 if not new_category or not new_category.strip():
-                    st.info("Enter a name for the new category to add it to the list")
+                    st.info(
+                        "Enter a name for the new category "
+                        "to add it to the list"
+                    )
                     return
                 created = create_category({"name": new_category.strip()})
                 if created:
@@ -163,6 +172,7 @@ def render_edit_form(record):
 
 
 def render_records():
+    """Displays all financial records in a tabular layout."""
     st.header("All financial records")
     records = st.session_state.records
     if not records:
@@ -174,12 +184,15 @@ def render_records():
         edit_key = f"edit_mode_{record['id']}"
         if edit_key not in st.session_state:
             st.session_state[edit_key] = False
-        col1, col2, col3, col4, col5, col6 = st.columns([1.25, 3, 1.5, 2, 2.5, 1.75])
+        col1, col2, col3, col4, col5, col6 = st.columns(
+            [1.25, 3, 1.5, 2, 2.5, 1.75]
+        )
         with col1:
             color = "green" if record["type"] == "income" else "red"
             text = record["type"].capitalize()
             st.markdown(
-                f"<span style='color: {color}; font-weight: 700;'>{text}</span>",
+                f"<span style='color: {color}; "
+                f"font-weight: 700;'>{text}</span>",
                 unsafe_allow_html=True,
             )
         with col2:
@@ -193,7 +206,8 @@ def render_records():
         with col5:
             category_name = category_map.get(record["category_id"])
             st.markdown(
-                f"<span class='badge'>{category_name}</span>", unsafe_allow_html=True
+                f"<span class='badge'>{category_name}</span>",
+                unsafe_allow_html=True,
             )
         with col6:
             cols_btn = st.columns([1, 1])
@@ -214,12 +228,14 @@ def render_records():
 
 
 def render_categories():
+    """Displays and manages financial categories."""
     st.header("Categories")
     for category in st.session_state.categories:
         col1, col2, col3 = st.columns([6, 2, 2])
         with col1:
             st.markdown(
-                f"<span class='badge'>{category['name']}</span>", unsafe_allow_html=True
+                f"<span class='badge'>{category['name']}</span>",
+                unsafe_allow_html=True,
             )
         with col2:
             st.write("")
@@ -252,44 +268,42 @@ def render_categories():
 
 
 def render_analytics():
+    """Renders financial analytics."""
     st.header("Financial Analytics")
 
-    # Получаем данные из сессии
     records = st.session_state.records
     if not records:
         st.info("No records available for analysis")
         return
 
-    # Конвертируем в DataFrame
     df = pd.DataFrame(records)
     df["date"] = pd.to_datetime(df["date"])
     df["amount"] = pd.to_numeric(df["amount"])
 
-    # Создаём отображение category_id → name
     category_map = {c["id"]: c["name"] for c in st.session_state.categories}
     df["category_name"] = df["category_id"].map(category_map)
 
-    # Фильтры даты
     col1, col2 = st.columns(2)
     with col1:
         start_date = st.date_input("Start date", value=df["date"].min().date())
     with col2:
         end_date = st.date_input("End date", value=df["date"].max().date())
 
-    # Фильтрация данных
     mask = (df["date"] >= pd.to_datetime(start_date)) & (
         df["date"] <= pd.to_datetime(end_date)
     )
     filtered_df = df.loc[mask]
 
-    # selected_categories = st.multiselect(
-    #     "Filter by categories",
-    #     options=[c['name'] for c in st.session_state.categories],
-    #     default=None
-    # )
+    selected_categories = st.multiselect(
+        "Filter by categories",
+        options=[c["name"] for c in st.session_state.categories],
+        default=None,
+    )
 
-    # if selected_categories:
-    #     filtered_df = filtered_df[filtered_df['category_name'].isin(selected_categories)]
+    if selected_categories:
+        filtered_df = filtered_df[
+            filtered_df["category_name"].isin(selected_categories)
+        ]
 
     income_df = filtered_df[filtered_df["type"] == "income"]
     expense_df = filtered_df[filtered_df["type"] == "expense"]
@@ -304,17 +318,20 @@ def render_analytics():
     )
 
     with tab1:
-        # График общих доходов/расходов
         st.subheader("Income vs Expenses")
         summary = filtered_df.groupby("type")["amount"].sum().reset_index()
         fig = px.pie(
-            summary, values="amount", names="type", title="Income/Expense Distribution"
+            summary,
+            values="amount",
+            names="type",
+            title="Income/Expense Distribution",
         )
         st.plotly_chart(fig, use_container_width=True)
 
-        # График по времени
         st.subheader("Over Time")
-        time_df = filtered_df.groupby(["date", "type"])["amount"].sum().reset_index()
+        time_df = (
+            filtered_df.groupby(["date", "type"])["amount"].sum().reset_index()
+        )
         fig = px.line(
             time_df,
             x="date",
@@ -326,53 +343,67 @@ def render_analytics():
 
     with tab2:
         st.subheader("Category Analytics")
-        
-        # Проверка наличия данных
-        if not hasattr(st.session_state, 'categories') or not st.session_state.categories:
+
+        if (
+            not hasattr(st.session_state, "categories")
+            or not st.session_state.categories
+        ):
             st.warning("No categories available. Please add categories first.")
         elif filtered_df.empty:
             st.warning("No records available for selected period")
         else:
-            # Создаем маппинг ID категорий к названиям
-            category_map = {c['id']: c['name'] for c in st.session_state.categories}
-            filtered_df['category_name'] = filtered_df['category_id'].map(category_map)
-            
-            # Фильтр по категориям
+            category_map = {
+                c["id"]: c["name"] for c in st.session_state.categories
+            }
+            filtered_df["category_name"] = filtered_df["category_id"].map(
+                category_map
+            )
+
             selected_categories = st.multiselect(
                 "Select categories to analyze",
                 options=list(category_map.values()),
-                default=list(category_map.values())
+                default=list(category_map.values()),
             )
-            
+
             if selected_categories:
-                filtered_df = filtered_df[filtered_df['category_name'].isin(selected_categories)]
-            
-            # График доходов/расходов по категориям
+                filtered_df = filtered_df[
+                    filtered_df["category_name"].isin(selected_categories)
+                ]
+
             st.markdown("### Income vs Expenses by Category")
-            cat_df = filtered_df.groupby(['category_name', 'type'])['amount'].sum().reset_index()
-            
+            cat_df = (
+                filtered_df.groupby(["category_name", "type"])["amount"]
+                .sum()
+                .reset_index()
+            )
+
             if not cat_df.empty:
                 fig = px.bar(
                     cat_df,
-                    x='category_name',
-                    y='amount',
-                    color='type',
-                    barmode='group',
+                    x="category_name",
+                    y="amount",
+                    color="type",
+                    barmode="group",
                     title="Income and Expenses by Category",
-                    labels={'category_name': 'Category', 'amount': 'Amount', 'type': 'Type'},
-                    color_discrete_map={'income': 'green', 'expense': 'red'}
+                    labels={
+                        "category_name": "Category",
+                        "amount": "Amount",
+                        "type": "Type",
+                    },
+                    color_discrete_map={"income": "green", "expense": "red"},
                 )
                 st.plotly_chart(fig, use_container_width=True)
-                
-                # Круговая диаграмма для расходов
+
                 st.markdown("### Expenses Distribution")
-                expense_df = filtered_df[filtered_df['type'] == 'expense']
+                expense_df = filtered_df[filtered_df["type"] == "expense"]
                 if not expense_df.empty:
                     fig_pie = px.pie(
-                        expense_df.groupby('category_name')['amount'].sum().reset_index(),
-                        values='amount',
-                        names='category_name',
-                        title="Percentage of Expenses by Category"
+                        expense_df.groupby("category_name")["amount"]
+                        .sum()
+                        .reset_index(),
+                        values="amount",
+                        names="category_name",
+                        title="Percentage of Expenses by Category",
                     )
                     st.plotly_chart(fig_pie, use_container_width=True)
                 else:
@@ -381,9 +412,10 @@ def render_analytics():
                 st.warning("No data available for selected filters")
 
     with tab3:
-        # Ежедневные тренды
         st.subheader("Daily Trends")
-        daily_df = filtered_df.groupby(["date", "type"])["amount"].sum().reset_index()
+        daily_df = (
+            filtered_df.groupby(["date", "type"])["amount"].sum().reset_index()
+        )
         fig = px.bar(
             daily_df,
             x="date",
@@ -394,19 +426,20 @@ def render_analytics():
         st.plotly_chart(fig, use_container_width=True)
 
     with tab4:
-        # Статистика
         st.subheader("Financial Statistics")
 
-        # Средние значения
         if not expense_df.empty:
-            avg_expense_per_day = expense_df.groupby("date")["amount"].sum().mean()
+            avg_expense_per_day = (
+                expense_df.groupby("date")["amount"].sum().mean()
+            )
             st.metric("Average Daily Expenses", f"{avg_expense_per_day:.2f}")
 
         if not income_df.empty:
-            avg_income_per_day = income_df.groupby("date")["amount"].sum().mean()
+            avg_income_per_day = (
+                income_df.groupby("date")["amount"].sum().mean()
+            )
             st.metric("Average Daily Income", f"{avg_income_per_day:.2f}")
 
-        # Суммарные значения
         col1, col2 = st.columns(2)
         with col1:
             total_income = income_df["amount"].sum()
@@ -415,41 +448,53 @@ def render_analytics():
             total_expense = expense_df["amount"].sum()
             st.metric("Total Expenses", f"{total_expense:.2f}")
 
-        # Баланс
         balance = total_income - total_expense
         st.metric(
             "Balance",
             f"{balance:.2f}",
             delta_color="inverse" if balance < 0 else "normal",
         )
-    
+
     if not filtered_df.empty:
         st.markdown("---")
         col1, col2 = st.columns(2)
-        
+
         with col1:
-            # CSV экспорт
+
             def prepare_enhanced_csv(df):
-                # Основные данные
-                main_data = df[['date', 'type', 'category_name', 'description', 'amount']]
-                
-                # Статистика по категориям
-                category_stats = df.groupby(['category_name', 'type'])['amount'] \
-                                .agg(['sum', 'count', 'mean']) \
-                                .reset_index()
-                category_stats.columns = ['Category', 'Type', 'Total Amount', 'Transaction Count', 'Average Amount']
-                
-                # Общая статистика
-                total_stats = pd.DataFrame({
-                    'Metric': ['Total Income', 'Total Expenses', 'Balance'],
-                    'Value': [
-                        income_df['amount'].sum(),
-                        expense_df['amount'].sum(),
-                        income_df['amount'].sum() - expense_df['amount'].sum()
-                    ]
-                })
-                
-                # Собираем все в один CSV
+                main_data = df[
+                    ["date", "type", "category_name", "description", "amount"]
+                ]
+
+                category_stats = (
+                    df.groupby(["category_name", "type"])["amount"]
+                    .agg(["sum", "count", "mean"])
+                    .reset_index()
+                )
+                category_stats.columns = [
+                    "Category",
+                    "Type",
+                    "Total Amount",
+                    "Transaction Count",
+                    "Average Amount",
+                ]
+
+                total_stats = pd.DataFrame(
+                    {
+                        "Metric": [
+                            "Total Income",
+                            "Total Expenses",
+                            "Balance",
+                        ],
+                        "Value": [
+                            income_df["amount"].sum(),
+                            expense_df["amount"].sum(),
+                            income_df["amount"].sum()
+                            - expense_df["amount"].sum(),
+                        ],
+                    }
+                )
+
                 output = io.StringIO()
                 output.write("Main Transactions Data\n")
                 main_data.to_csv(output, index=False)
@@ -457,7 +502,7 @@ def render_analytics():
                 category_stats.to_csv(output, index=False)
                 output.write("\n\nSummary Statistics\n")
                 total_stats.to_csv(output, index=False)
-                
+
                 return output.getvalue()
 
             csv_data = prepare_enhanced_csv(filtered_df)
@@ -467,7 +512,7 @@ def render_analytics():
                 file_name="financial_report_enhanced.csv",
                 mime="text/csv",
             )
-        
+
             with col2:
                 if st.button("Generate PDF Report"):
                     with st.spinner("Generating PDF..."):
@@ -477,11 +522,13 @@ def render_analytics():
                                 st.download_button(
                                     label="Download PDF Report",
                                     data=pdf_data,
-                                    file_name=f"financial_report_{datetime.now().date()}.pdf",
+                                    file_name=f"financial_report_"
+                                    f"{datetime.now().date()}.pdf",
                                     mime="application/pdf",
                                 )
                             else:
-                                st.error("Failed to generate PDF - no data returned")
+                                st.error(
+                                    "Failed to generate PDF - no data returned"
+                                )
                         except Exception as e:
                             st.error(f"PDF generation failed: {str(e)}")
-

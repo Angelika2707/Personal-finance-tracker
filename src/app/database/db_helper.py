@@ -11,6 +11,8 @@ from app.config import settings
 
 
 class DatabaseHelper:
+    """Helper class to manage database connections and sessions."""
+
     def __init__(self, url: str, echo: bool = False):
         self.engine = create_async_engine(url=url, echo=echo)
         self.session_factory = async_sessionmaker(
