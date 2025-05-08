@@ -26,6 +26,7 @@ dependencies = [
     "passlib[bcrypt] (>=1.7.4,<2.0.0)",
     "redis[asyncio] (>=6.0.0,<7.0.0)",
     "httpx (>=0.28.1,<0.29.0)",
+    "reportlab (>=3.6,<4) ; python_version >= \"3.12\" and python_version < \"4.0\""
 ]
 
 [tool.poetry]
