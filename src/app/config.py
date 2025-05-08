@@ -18,7 +18,7 @@ class DbSettings(BaseSettings):
     """Database connection configuration."""
 
     db_url: str = f"sqlite+aiosqlite:///{BASE_DIR}/db.sqlite3"
-    db_echo: bool = True
+    db_echo: bool = False
 
 
 class RedisSettings(BaseSettings):
