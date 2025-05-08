@@ -1,0 +1,6 @@
+paths:
+  - src/app
+skip_file_doc: true     # ignore missing module docstrings
+skip_property: true     # ignore missing @property docstrings
+skip_empty: true        # ignore completely empty files
+fail_under: 90
