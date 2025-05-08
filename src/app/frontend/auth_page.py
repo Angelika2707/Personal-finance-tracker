@@ -1,6 +1,6 @@
 import streamlit as st
 import httpx
-from api_helpers import client
+from app.frontend.api_helpers import client
 from app.config import settings
 
 
@@ -32,7 +32,8 @@ def login_user(username, password):
             st.session_state["access_token"] = client.cookies.get("access_token")
             return True, response.json().get("message")
         else:
-            return False, "Failed to login"
+            error_detail = response.json().get("detail", "Failed to login")
+            return False, error_detail
     except httpx.RequestError as e:
         return False, f"Error connecting to server: {str(e)}"
 
