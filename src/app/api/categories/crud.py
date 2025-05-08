@@ -2,7 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.categories.schemas import Category, CategoryCreate, CategoryUpdate
+from app.api.categories.schemas import CategoryCreate, CategoryUpdate
 from app.database.models import Category
 
 
