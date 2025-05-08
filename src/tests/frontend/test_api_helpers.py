@@ -1,6 +1,5 @@
 import pytest
 from httpx import Client, Response, RequestError
-import ssl
 
 from src.app.frontend.api_helpers import (
     get_data,
@@ -18,10 +17,6 @@ from src.app.frontend.api_helpers import (
 def mock_client(mocker):
     mock = mocker.MagicMock(spec=Client)
     mocker.patch("src.app.frontend.api_helpers.client", mock)
-    mocker.patch(
-        "src.app.frontend.api_helpers.ssl.create_default_context",
-        return_value=ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-    )
     return mock
 
 
