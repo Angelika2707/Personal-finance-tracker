@@ -1,0 +1,54 @@
+[project]
+name = "personal-finance-tracker"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Angelika2707",email = "53828140+Angelika2707@users.noreply.github.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi (>=0.115.12,<0.116.0)",
+    "uvicorn[standart] (>=0.34.2,<0.35.0)",
+    "pydantic[email] (>=2.11.4,<3.0.0)",
+    "sqlalchemy[asycio] (>=2.0.40,<3.0.0)",
+    "aiosqlite (>=0.21.0,<0.22.0)",
+    "pydantic-settings (>=2.9.1,<3.0.0)",
+    "streamlit (>=1.44.1,<2.0.0)",
+    "alembic (>=1.15.2,<2.0.0)",
+    "pyjwt[crypto] (>=2.10.1,<3.0.0)",
+    "bcrypt (>=4.3.0,<5.0.0)",
+    "python-multipart (>=0.0.20,<0.0.21)",
+    "authx (>=1.4.2,<2.0.0)",
+    "email-validator (>=2.2.0,<3.0.0)",
+    "pandas (>=2.2.3,<3.0.0)",
+    "plotly (>=6.0.1,<7.0.0)",
+    "passlib[bcrypt] (>=1.7.4,<2.0.0)",
+    "redis[asyncio] (>=6.0.0,<7.0.0)",
+    "httpx (>=0.28.1,<0.29.0)",
+    "reportlab (>=3.6,<4) ; python_version >= \"3.12\" and python_version < \"4.0\""
+]
+
+[tool.poetry]
+packages = [
+    { include = "app", from = "src" }
+]
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "."
+]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.5"
+black = "^25.1.0"
+bandit = "^1.8.3"
+docstr-coverage = "^2.3.2"
+pytest-cov = "^6.1.1"
+flake8 = "^7.2.0"
+pytest-mock = "^3.14.0"
+pytest-asyncio = "^0.26.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0", "wheel"]
+build-backend = "poetry.core.masonry.api"
