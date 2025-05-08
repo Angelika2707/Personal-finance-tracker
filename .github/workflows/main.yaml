@@ -63,7 +63,7 @@ jobs:
         run: poetry install
 
       - name: Check documentation coverage
-        run: poetry run docstr-coverage src/
+        run: poetry run docstr-coverage
   test:
     runs-on: ubuntu-latest
     steps:
@@ -90,7 +90,7 @@ jobs:
         run: poetry install
 
       - name: Run tests with coverage
-        run: poetry run pytest src/tests/ --cov=src/ --cov-report=term-missing --cov-fail-under=60
+        run: poetry run pytest src/tests/ --cov=src/app/ --cov-branch --cov-report=term-missing --cov-fail-under=60
   security:
     runs-on: ubuntu-latest
     steps:
