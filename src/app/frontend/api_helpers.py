@@ -4,7 +4,6 @@ import httpx
 import streamlit as st
 
 from app.config import settings
-import requests
 
 if "client" not in st.session_state:
     context = ssl.create_default_context(
@@ -134,37 +133,48 @@ def delete_category(category_id: int):
         st.error(f"Failed to delete category: {e}")
         return False
 
+
 def get_auth_header():
     """
-    Получает токен доступа из сессии Streamlit и возвращает заголовок авторизации
+    Retrieves the access token from the Streamlit session and returns
+    the authorization header.
     """
-    if 'access_token' in st.session_state:
+    if "access_token" in st.session_state:
         return {"Authorization": f"Bearer {st.session_state.access_token}"}
     return {}
 
+
 def generate_pdf_report(df):
+    """Generates PDF report."""
     try:
         df = df.copy()
-        df['date'] = df['date'].astype(str)
-        
+        df["date"] = df["date"].astype(str)
+
         data = {
             "columns": df.columns.tolist(),
             "rows": df.values.tolist(),
-            "start_date": str(df['date'].min()),
-            "end_date": str(df['date'].max()),
+            "start_date": str(df["date"].min()),
+            "end_date": str(df["date"].max()),
             "stats": {
-                "total_income": float(df[df['type'] == 'income']['amount'].sum()),
-                "total_expense": float(df[df['type'] == 'expense']['amount'].sum()),
-                "balance": float(df[df['type'] == 'income']['amount'].sum() - df[df['type'] == 'expense']['amount'].sum())
-            }
+                "total_income": float(
+                    df[df["type"] == "income"]["amount"].sum()
+                ),
+                "total_expense": float(
+                    df[df["type"] == "expense"]["amount"].sum()
+                ),
+                "balance": float(
+                    df[df["type"] == "income"]["amount"].sum()
+                    - df[df["type"] == "expense"]["amount"].sum()
+                ),
+            },
         }
-        
+
         response = client.post(
             f"{settings.api_endpoints.financial_records_url}generate-pdf/",
             json=data,
-            headers=get_auth_header()
+            headers=get_auth_header(),
         )
-        
+
         if response.status_code == 200:
             return response.content
         else:

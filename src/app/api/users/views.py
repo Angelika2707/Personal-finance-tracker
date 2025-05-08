@@ -49,7 +49,7 @@ async def login_user(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Account temporarily locked due to "
-                   "too many failed login attempts. Try again later.",
+            "too many failed login attempts. Try again later.",
         )
 
     if not user or not validate_password(

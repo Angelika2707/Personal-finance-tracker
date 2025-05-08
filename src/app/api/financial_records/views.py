@@ -151,56 +151,66 @@ async def delete_financial_record(
 @router.post("/generate-pdf/")
 async def generate_pdf_report(
     data: dict,
-    current_user_id: int = Depends(get_current_user)
 ):
+    """Generates PDF report."""
     try:
         buffer = io.BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=letter)
         elements = []
         styles = getSampleStyleSheet()
-        
-        # Заголовок
-        elements.append(Paragraph("Financial Report", styles['Title']))
-        elements.append(Paragraph(f"Period: {data['start_date']} to {data['end_date']}", styles['Normal']))
-        
-        # Основные транзакции
-        elements.append(Paragraph("Transactions", styles['Heading2']))
-        table_data = [data['columns']] + data['rows']
+
+        elements.append(Paragraph("Financial Report", styles["Title"]))
+        elements.append(
+            Paragraph(
+                f"Period: {data['start_date']} to {data['end_date']}",
+                styles["Normal"],
+            )
+        )
+
+        elements.append(Paragraph("Transactions", styles["Heading2"]))
+        table_data = [data["columns"]] + data["rows"]
         t = Table(table_data)
-        t.setStyle(TableStyle([
-            ('BACKGROUND', (0,0), (-1,0), colors.grey),
-            ('TEXTCOLOR', (0,0), (-1,0), colors.whitesmoke),
-            ('ALIGN', (0,0), (-1,-1), 'CENTER'),
-            ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0,0), (-1,0), 12),
-            ('BOTTOMPADDING', (0,0), (-1,0), 12),
-            ('BACKGROUND', (0,1), (-1,-1), colors.beige),
-            ('GRID', (0,0), (-1,-1), 1, colors.black),
-        ]))
+        t.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+                    ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                    ("FONTSIZE", (0, 0), (-1, 0), 12),
+                    ("BOTTOMPADDING", (0, 0), (-1, 0), 12),
+                    ("BACKGROUND", (0, 1), (-1, -1), colors.beige),
+                    ("GRID", (0, 0), (-1, -1), 1, colors.black),
+                ]
+            )
+        )
         elements.append(t)
-        
-        # Статистика
-        elements.append(Paragraph("Summary Statistics", styles['Heading2']))
+
+        elements.append(Paragraph("Summary Statistics", styles["Heading2"]))
         stats_data = [
             ["Metric", "Amount"],
             ["Total Income", f"{data['stats']['total_income']:.2f}"],
             ["Total Expenses", f"{data['stats']['total_expense']:.2f}"],
-            ["Balance", f"{data['stats']['balance']:.2f}"]
+            ["Balance", f"{data['stats']['balance']:.2f}"],
         ]
         t = Table(stats_data)
-        t.setStyle(TableStyle([
-            ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
-            ('ALIGN', (0,0), (-1,-1), 'CENTER'),
-            ('GRID', (0,0), (-1,-1), 1, colors.black),
-        ]))
+        t.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                    ("GRID", (0, 0), (-1, -1), 1, colors.black),
+                ]
+            )
+        )
         elements.append(t)
-        
+
         doc.build(elements)
         buffer.seek(0)
         return StreamingResponse(buffer, media_type="application/pdf")
-    
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"PDF generation failed: {str(e)}"
+            detail=f"PDF generation failed: {str(e)}",
         )
