@@ -1,10 +1,13 @@
+import ssl
+
 import httpx
 import streamlit as st
+
 from app.config import settings
 
-
 if "client" not in st.session_state:
-    st.session_state.client = httpx.Client(verify=str(settings.auth_jwt.cert_path))
+    context = ssl.create_default_context(cafile=str(settings.auth_jwt.cert_path))
+    st.session_state.client = httpx.Client(verify=context)
 
 client = st.session_state.client
 
