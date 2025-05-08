@@ -154,3 +154,70 @@ poetry run streamlit run src/app/frontend/main.py
 
 ## Achieved quality metrics
 
+### Maintainability
+
+### **1. Documentation Coverage**  
+**Tool**: `docstr-coverage`     
+**Purpose**: Verify docstring presence for classes/methods (excluding properties and module-level docs)     
+**Threshold**: Minimum 90% required     
+```bash
+> poetry run docstr-coverage
+...
+Total coverage: 91.2%  -  Grade: Great
+```
+
+### **2. Test Coverage**  
+**Tool**: `pytest-cov`      
+**Purpose**: Measure code coverage      
+**Threshold**: Minimum 60% required     
+```bash
+> poetry run pytest src/tests/ --cov=src/app/ --cov-branch --cov-report=term-missing --cov-fail-under=60
+...
+Required test coverage of 60% reached. Total coverage: 85.65%
+```
+
+### **3. PEP8 Compliance**  
+**Tool**: `flake8`      
+**Purpose**: Enforce Python style guide adherence       
+**Threshold**: Number of flake8 errors should be zero       
+```bash
+> poetry run flake8 src/
+...   # empty output, no errors and warnings
+```
+
+### Reliability
+
+### Performance
+
+### Security
+### **1. Bandit Security Scan**  
+**Tool**: `bandit`     
+**Purpose**: Identify common security vulnerabilities             
+**Threshold**: Bandit report should not contain critical vulnerabilities          
+```bash
+> poetry run bandit -r src/app -x tests
+...
+Test results:
+        No issues identified.
+
+Code scanned:
+        Total lines of code: 1697
+        Total lines skipped (#nosec): 0
+
+Run metrics:
+        Total issues (by severity):
+                Undefined: 0
+                Low: 0
+                Medium: 0
+                High: 0
+        Total issues (by confidence):
+                Undefined: 0
+                Low: 0
+                Medium: 0
+                High: 0
+Files skipped (0):
+```
+### **2. Authentication Protection**
+**Purpose**: Prevent brute-force attacks        
+**Threshold**: Temporarily lock a user account after 5 consecutive failed login attempts. A notification is sent to the user upon lockout       
+**Result**: Implemented in the application logic        
