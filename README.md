@@ -4,6 +4,8 @@
 Personal Finance Tracker is a simple web app for managing personal finances. 
 Users can log incomes and expenses, categorize them, visualize spending patterns, and export data.
 
+**Presentation:** [SQR_presentation](https://docs.google.com/presentation/d/1_ds7obSj6HQm796wyK8OcAuuLBzb5KHryja8f3HFAm4/edit?usp=sharing)
+
 ### Features
 - Secure login and personal account
 - Add, edit, delete financial records
