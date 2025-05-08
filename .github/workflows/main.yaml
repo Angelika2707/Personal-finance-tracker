@@ -1,13 +1,6 @@
 name: SQR Project CI
 
-on:
-  push:
-    branches:
-      - '**'
-  pull_request:
-    branches:
-      - main
-      - dev
+on: push
 
 jobs:
   lint:
