@@ -22,11 +22,14 @@ def fake_category():
     return Category(id=7, name="Test", user_id=123)
 
 
-@pytest.mark.parametrize("user_id, expected_count", [
-    (123, 1),
-    (456, 2),
-    (789, 0),
-])
+@pytest.mark.parametrize(
+    "user_id, expected_count",
+    [
+        (123, 1),
+        (456, 2),
+        (789, 0),
+    ],
+)
 @pytest.mark.asyncio
 async def test_get_categories(session, fake_category, user_id, expected_count):
     mock_result = MagicMock()
@@ -47,9 +50,9 @@ async def test_get_categories_with_multiple_users(session, user_id):
         123: [Category(id=1, name="Food", user_id=123)],
         456: [
             Category(id=2, name="Books", user_id=456),
-            Category(id=3, name="Transport", user_id=456)
+            Category(id=3, name="Transport", user_id=456),
         ],
-        789: []
+        789: [],
     }
 
     mock_result = MagicMock()
@@ -63,12 +66,17 @@ async def test_get_categories_with_multiple_users(session, user_id):
     session.execute.assert_awaited_once()
 
 
-@pytest.mark.parametrize("category_id, user_id, expected_result", [
-    (1, 123, "found"),
-    (999, 123, None),
-])
+@pytest.mark.parametrize(
+    "category_id, user_id, expected_result",
+    [
+        (1, 123, "found"),
+        (999, 123, None),
+    ],
+)
 @pytest.mark.asyncio
-async def test_get_category(session, fake_category, category_id, user_id, expected_result):
+async def test_get_category(
+    session, fake_category, category_id, user_id, expected_result
+):
     mock_result = MagicMock()
 
     if expected_result == "found":
@@ -89,10 +97,13 @@ async def test_get_category(session, fake_category, category_id, user_id, expect
     session.execute.assert_called_once()
 
 
-@pytest.mark.parametrize("update_data, expected_name", [
-    ({"name": "New Name"}, "New Name"),
-    ({"name": ""}, ""),
-])
+@pytest.mark.parametrize(
+    "update_data, expected_name",
+    [
+        ({"name": "New Name"}, "New Name"),
+        ({"name": ""}, ""),
+    ],
+)
 @pytest.mark.asyncio
 async def test_update_category(session, fake_category, update_data, expected_name):
     session.commit = AsyncMock()

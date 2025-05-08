@@ -2,11 +2,7 @@ import pytest
 import streamlit as st
 from httpx import Client, Response, RequestError
 
-from src.app.frontend.auth_page import (
-    register_user,
-    login_user,
-    render_auth_page
-)
+from src.app.frontend.auth_page import register_user, login_user, render_auth_page
 
 
 @pytest.fixture
@@ -27,11 +23,14 @@ def mock_streamlit(mocker):
     st.session_state.clear()
 
 
-@pytest.mark.parametrize("reg_status, login_return, expected", [
-    (200, (True, "Logged in"), (True, "Logged in")),
-    (422, None, (False, "Password must have at least 5 characters")),
-    (500, None, (False, "Failed to register")),
-])
+@pytest.mark.parametrize(
+    "reg_status, login_return, expected",
+    [
+        (200, (True, "Logged in"), (True, "Logged in")),
+        (422, None, (False, "Password must have at least 5 characters")),
+        (500, None, (False, "Failed to register")),
+    ],
+)
 def test_register_user(mocker, mock_client, reg_status, login_return, expected):
     mock_client.post.return_value = Response(reg_status)
     if reg_status == 200:
@@ -47,13 +46,24 @@ def test_register_user_request_error(mock_client):
     assert "Error connecting to server" in msg
 
 
-@pytest.mark.parametrize("status_code, cookie_val, expected_result, expected_state", [
-    (200, "token123", (True, "You successfully registered!"),
-     {"logged_in": True, "username": "username", "access_token": "token123"}),
-    (401, None, (False, "Failed to login"), {}),
-])
-def test_login_user_status(mock_client, status_code, cookie_val, expected_result, expected_state):
-    mock_client.post.return_value = Response(status_code, json={"message": "You successfully registered!"})
+@pytest.mark.parametrize(
+    "status_code, cookie_val, expected_result, expected_state",
+    [
+        (
+            200,
+            "token123",
+            (True, "You successfully registered!"),
+            {"logged_in": True, "username": "username", "access_token": "token123"},
+        ),
+        (401, None, (False, "Failed to login"), {}),
+    ],
+)
+def test_login_user_status(
+    mock_client, status_code, cookie_val, expected_result, expected_state
+):
+    mock_client.post.return_value = Response(
+        status_code, json={"message": "You successfully registered!"}
+    )
     mock_client.cookies.get.return_value = cookie_val
     result = login_user("username", "password")
     assert result == expected_result

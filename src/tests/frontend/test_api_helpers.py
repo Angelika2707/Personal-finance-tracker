@@ -28,14 +28,37 @@ def mock_streamlit(mocker):
     mocker.patch("streamlit.session_state", {})
 
 
-@pytest.mark.parametrize("status_code, response_json, expected", [
-    (200,
-     [{"id": 1, "type": "expense", "description": "Record", "amount": 100.0, "date": "2025-01-01 15:00:00.000000",
-       "user_id": 1, "category_id": 1}],
-     [{"id": 1, "type": "expense", "description": "Record", "amount": 100.0, "date": "2025-01-01 15:00:00.000000",
-       "user_id": 1, "category_id": 1}]),
-    (500, None, []),
-])
+@pytest.mark.parametrize(
+    "status_code, response_json, expected",
+    [
+        (
+            200,
+            [
+                {
+                    "id": 1,
+                    "type": "expense",
+                    "description": "Record",
+                    "amount": 100.0,
+                    "date": "2025-01-01 15:00:00.000000",
+                    "user_id": 1,
+                    "category_id": 1,
+                }
+            ],
+            [
+                {
+                    "id": 1,
+                    "type": "expense",
+                    "description": "Record",
+                    "amount": 100.0,
+                    "date": "2025-01-01 15:00:00.000000",
+                    "user_id": 1,
+                    "category_id": 1,
+                }
+            ],
+        ),
+        (500, None, []),
+    ],
+)
 def test_get_data(mock_client, status_code, response_json, expected):
     mock_client.get.return_value = Response(status_code, json=response_json)
     result = get_data()
@@ -48,10 +71,13 @@ def test_get_data_request_error(mock_client):
     assert result == []
 
 
-@pytest.mark.parametrize("status_code, expected", [
-    (200, True),
-    (500, False),
-])
+@pytest.mark.parametrize(
+    "status_code, expected",
+    [
+        (200, True),
+        (500, False),
+    ],
+)
 def test_create_record(mock_client, status_code, expected):
     data = {
         "type": "income",
@@ -77,10 +103,13 @@ def test_create_record_request_error(mock_client):
     assert result is False
 
 
-@pytest.mark.parametrize("status_code, expected", [
-    (204, True),
-    (404, False),
-])
+@pytest.mark.parametrize(
+    "status_code, expected",
+    [
+        (204, True),
+        (404, False),
+    ],
+)
 def test_delete_record(mock_client, status_code, expected):
     mock_client.delete.return_value = Response(status_code)
     assert delete_record(100) == expected
@@ -92,10 +121,13 @@ def test_delete_record_request_error(mock_client):
     assert result is False
 
 
-@pytest.mark.parametrize("status_code, expected", [
-    (204, True),
-    (400, False),
-])
+@pytest.mark.parametrize(
+    "status_code, expected",
+    [
+        (204, True),
+        (400, False),
+    ],
+)
 def test_update_record(mock_client, status_code, expected):
     data = {
         "type": "expense",
@@ -132,10 +164,13 @@ def test_logout_user_request_error(mock_client):
     assert mock_client.post.called
 
 
-@pytest.mark.parametrize("status_code, response_json, expected", [
-    (200, [{"id": 1, "name": "Other"}], [{"id": 1, "name": "Other"}]),
-    (500, None, []),
-])
+@pytest.mark.parametrize(
+    "status_code, response_json, expected",
+    [
+        (200, [{"id": 1, "name": "Other"}], [{"id": 1, "name": "Other"}]),
+        (500, None, []),
+    ],
+)
 def test_get_categories(mock_client, status_code, response_json, expected):
     mock_client.get.return_value = Response(status_code, json=response_json)
     result = get_categories()
@@ -155,11 +190,14 @@ def test_create_category_success(mock_client, mocker):
     assert result == {"name": "Travel", "user_id": 1}
 
 
-@pytest.mark.parametrize("existing, input_data, expected", [
-    ([{"name": "Food"}], {"name": "food"}, None),
-    ([{"name": "Food"}], {"name": "Food"}, None),
-    ([], {"name": "   "}, None),
-])
+@pytest.mark.parametrize(
+    "existing, input_data, expected",
+    [
+        ([{"name": "Food"}], {"name": "food"}, None),
+        ([{"name": "Food"}], {"name": "Food"}, None),
+        ([], {"name": "   "}, None),
+    ],
+)
 def test_create_category_invalid_cases(mocker, existing, input_data, expected):
     mocker.patch("src.app.frontend.api_helpers.get_categories", return_value=existing)
     result = create_category(input_data)
@@ -173,10 +211,13 @@ def test_create_category_request_error(mock_client, mocker):
     assert result is None
 
 
-@pytest.mark.parametrize("status_code, expected", [
-    (204, True),
-    (404, False),
-])
+@pytest.mark.parametrize(
+    "status_code, expected",
+    [
+        (204, True),
+        (404, False),
+    ],
+)
 def test_delete_category(mock_client, status_code, expected):
     mock_client.delete.return_value = Response(status_code)
     assert delete_category(123) is expected

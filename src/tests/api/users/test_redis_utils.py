@@ -14,11 +14,14 @@ def setup_redis_mock(mock_redis):
     redis_utils.redis_helper.redis_client = mock_redis
 
 
-@pytest.mark.parametrize("attempts, ttl_called", [
-    (1, True),
-    (2, False),
-    (5, False),
-])
+@pytest.mark.parametrize(
+    "attempts, ttl_called",
+    [
+        (1, True),
+        (2, False),
+        (5, False),
+    ],
+)
 @pytest.mark.asyncio
 async def test_increment_failed_attempts(mock_redis, attempts, ttl_called):
     username = "test_user"
@@ -42,16 +45,17 @@ async def test_lock_account(mock_redis):
     await redis_utils.lock_account(username)
 
     mock_redis.set.assert_awaited_once_with(
-        f"locked:{username}",
-        "true",
-        ex=timedelta(minutes=5)
+        f"locked:{username}", "true", ex=timedelta(minutes=5)
     )
 
 
-@pytest.mark.parametrize("redis_return, expected", [
-    ("true", True),
-    (None, False),
-])
+@pytest.mark.parametrize(
+    "redis_return, expected",
+    [
+        ("true", True),
+        (None, False),
+    ],
+)
 @pytest.mark.asyncio
 async def test_is_account_locked(mock_redis, redis_return, expected):
     username = "test_user"

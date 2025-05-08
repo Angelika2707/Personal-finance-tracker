@@ -283,12 +283,14 @@ def render_analytics():
 
     selected_categories = st.multiselect(
         "Filter by categories",
-        options=[c['name'] for c in st.session_state.categories],
-        default=None
+        options=[c["name"] for c in st.session_state.categories],
+        default=None,
     )
 
     if selected_categories:
-        filtered_df = filtered_df[filtered_df['category_name'].isin(selected_categories)]
+        filtered_df = filtered_df[
+            filtered_df["category_name"].isin(selected_categories)
+        ]
 
     income_df = filtered_df[filtered_df["type"] == "income"]
     expense_df = filtered_df[filtered_df["type"] == "expense"]
@@ -325,53 +327,68 @@ def render_analytics():
 
     with tab2:
         st.subheader("Category Analytics")
-        
+
         # Проверка наличия данных
-        if not hasattr(st.session_state, 'categories') or not st.session_state.categories:
+        if (
+            not hasattr(st.session_state, "categories")
+            or not st.session_state.categories
+        ):
             st.warning("No categories available. Please add categories first.")
         elif filtered_df.empty:
             st.warning("No records available for selected period")
         else:
             # Создаем маппинг ID категорий к названиям
-            category_map = {c['id']: c['name'] for c in st.session_state.categories}
-            filtered_df['category_name'] = filtered_df['category_id'].map(category_map)
-            
+            category_map = {c["id"]: c["name"] for c in st.session_state.categories}
+            filtered_df["category_name"] = filtered_df["category_id"].map(category_map)
+
             # Фильтр по категориям
             selected_categories = st.multiselect(
                 "Select categories to analyze",
                 options=list(category_map.values()),
-                default=list(category_map.values())
+                default=list(category_map.values()),
             )
-            
+
             if selected_categories:
-                filtered_df = filtered_df[filtered_df['category_name'].isin(selected_categories)]
-            
+                filtered_df = filtered_df[
+                    filtered_df["category_name"].isin(selected_categories)
+                ]
+
             # График доходов/расходов по категориям
             st.markdown("### Income vs Expenses by Category")
-            cat_df = filtered_df.groupby(['category_name', 'type'])['amount'].sum().reset_index()
-            
+            cat_df = (
+                filtered_df.groupby(["category_name", "type"])["amount"]
+                .sum()
+                .reset_index()
+            )
+
             if not cat_df.empty:
                 fig = px.bar(
                     cat_df,
-                    x='category_name',
-                    y='amount',
-                    color='type',
-                    barmode='group',
+                    x="category_name",
+                    y="amount",
+                    color="type",
+                    barmode="group",
                     title="Income and Expenses by Category",
-                    labels={'category_name': 'Category', 'amount': 'Amount', 'type': 'Type'},
-                    color_discrete_map={'income': 'green', 'expense': 'red'}
+                    labels={
+                        "category_name": "Category",
+                        "amount": "Amount",
+                        "type": "Type",
+                    },
+                    color_discrete_map={"income": "green", "expense": "red"},
                 )
                 st.plotly_chart(fig, use_container_width=True)
-                
+
                 # Круговая диаграмма для расходов
                 st.markdown("### Expenses Distribution")
-                expense_df = filtered_df[filtered_df['type'] == 'expense']
+                expense_df = filtered_df[filtered_df["type"] == "expense"]
                 if not expense_df.empty:
                     fig_pie = px.pie(
-                        expense_df.groupby('category_name')['amount'].sum().reset_index(),
-                        values='amount',
-                        names='category_name',
-                        title="Percentage of Expenses by Category"
+                        expense_df.groupby("category_name")["amount"]
+                        .sum()
+                        .reset_index(),
+                        values="amount",
+                        names="category_name",
+                        title="Percentage of Expenses by Category",
                     )
                     st.plotly_chart(fig_pie, use_container_width=True)
                 else:

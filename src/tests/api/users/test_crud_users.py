@@ -37,10 +37,13 @@ async def test_create_user(session):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("username, expected_user", [
-    ("testuser", User(id=1, username="testuser", hashed_password="password")),
-    ("unknown", None),
-])
+@pytest.mark.parametrize(
+    "username, expected_user",
+    [
+        ("testuser", User(id=1, username="testuser", hashed_password="password")),
+        ("unknown", None),
+    ],
+)
 async def test_get_user_by_username(session, username, expected_user):
     mock_result = MagicMock(spec=Result)
     mock_result.scalars.return_value.first.return_value = expected_user
